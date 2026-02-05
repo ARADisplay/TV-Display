@@ -1,71 +1,809 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Power BI Secure Embed</title>
-
-  <!-- Power BI Client -->
-  <script src="https://cdn.jsdelivr.net/npm/powerbi-client@2.23.0/dist/powerbi.min.js"></script>
-
-  <!-- Microsoft Authentication -->
-  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
-
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    #reportContainer {
-      height: 100vh;
-      width: 100vw;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="reportContainer"></div>
-
-  <script>
-    const msalConfig = {
-      auth: {
-        clientId: "YOUR_AZURE_AD_APP_ID",
-        authority: "https://login.microsoftonline.com/YOUR_TENANT_ID",
-        redirectUri: window.location.href
-      }
-    };
-
-    const msalInstance = new msal.PublicClientApplication(msalConfig);
-
-    async function signInAndEmbed() {
-      const loginResponse = await msalInstance.loginPopup({
-        scopes: ["https://analysis.windows.net/powerbi/api/.default"]
-      });
-
-      const tokenResponse = await msalInstance.acquireTokenSilent({
-        account: loginResponse.account,
-        scopes: ["https://analysis.windows.net/powerbi/api/.default"]
-      });
-
-      const embedConfig = {
-        type: "report",
-        tokenType: powerbi.models.TokenType.Aad,
-        accessToken: tokenResponse.accessToken,
-        embedUrl: "https://app.powerbi.com/reportEmbed?reportId=REPORT_ID&groupId=WORKSPACE_ID",
-        id: "REPORT_ID",
-        permissions: powerbi.models.Permissions.All,
-        settings: {
-          panes: {
-            filters: { visible: false },
-            pageNavigation: { visible: false }
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Carousel & Power BI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      };
 
-      const container = document.getElementById("reportContainer");
-      powerbi.embed(container, embedConfig);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    signInAndEmbed();
-  </script>
+        .container {
+            max-width: 1600px;
+            width: 90%;
+            height: 95vh;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.3);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .setting-group {
+            margin-bottom: 30px;
+        }
+
+        .setting-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .setting-group input,
+        .setting-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .setting-group input[type="file"] {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .setting-group input:focus,
+        .setting-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .setting-group button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .setting-group button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .settings-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .settings-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .fullscreen-toggle {
+            position: fixed;
+            top: 20px;
+            right: 100px;
+            background: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .fullscreen-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            background: #667eea;
+            color: white;
+        }
+
+        /* Hide buttons in fullscreen mode */
+        body.fullscreen-mode .settings-toggle,
+        body.fullscreen-mode .fullscreen-toggle {
+            display: none;
+        }
+
+        /* Fullscreen mode adjustments */
+        body.fullscreen-mode {
+            padding: 0;
+        }
+
+        body.fullscreen-mode .container {
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+        }
+
+        body.fullscreen-mode .content-wrapper {
+            gap: 0;
+        }
+
+        body.fullscreen-mode .powerbi-section,
+        body.fullscreen-mode .carousel-section {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+            padding: 0;
+        }
+
+        /* Image Carousel Section */
+        .carousel-section {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #f0f0f0;
+            min-height: 150px;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: #667eea;
+            transform: scale(1.3);
+        }
+
+        /* Power BI Section */
+        .powerbi-section {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            flex: 2.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .powerbi-container {
+            width: 100%;
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+        }
+
+        .powerbi-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .powerbi-placeholder {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .powerbi-placeholder p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .powerbi-placeholder code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                height: auto;
+                min-height: calc(100vh - 40px);
+            }
+            
+            .powerbi-section {
+                min-height: 500px;
+            }
+            
+            .carousel-section {
+                min-height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .powerbi-section {
+                min-height: 400px;
+            }
+
+            .carousel-section {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h3>⚙️ Settings</h3>
+                <button onclick="toggleSettings()" class="close-btn">✕</button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <label>Power BI Embed URL:</label>
+                    <input type="text" id="powerbiUrl" placeholder="Enter Power BI embed URL" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52">
+                    <button onclick="updatePowerBI()">Update Dashboard</button>
+                </div>
+                <div class="setting-group">
+                    <label>Image URLs (one per line):</label>
+                    <small style="color: #666; display: block; margin-bottom: 8px;">
+                        💡 Upload images to SharePoint, then paste their URLs here (4 images recommended)
+                    </small>
+                    <small style="color: #667eea; display: block; margin-bottom: 8px; font-weight: bold;">
+                        📋 How to get SharePoint image URLs:<br>
+                        1. Upload images to SharePoint document library<br>
+                        2. Click "..." on image → Share → Copy link<br>
+                        3. Paste the sharing links below (one per line)<br>
+                        <br>
+                        ✅ Sharing URLs work! Example:<br>
+                        <span style="font-size: 11px;">https://yourcompany.sharepoint.com/:i:/s/site/...</span>
+                    </small>
+                    <textarea id="imageUrls" rows="8" placeholder="Paste SharePoint sharing links here, one per line">https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop
+https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop
+https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop
+https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop</textarea>
+                    <button onclick="updateImages()">Update Images</button>
+                </div>
+                <div class="setting-group">
+                    <label>Image Interval (seconds):</label>
+                    <input type="number" id="intervalSeconds" min="1" max="60" value="3" placeholder="Seconds between images">
+                    <button onclick="updateInterval()">Update Interval</button>
+                </div>
+                
+                <div class="setting-group" style="border-top: 2px solid #eee; padding-top: 20px; margin-top: 20px;">
+                    <button onclick="saveConfiguration()" style="background: #28a745; font-size: 18px; padding: 15px;">
+                        💾 Save All Settings
+                    </button>
+                    <small style="color: #666; display: block; margin-top: 10px; text-align: center;">
+                        Saves Power BI URL, Image URLs, and Interval for next time
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Toggle Button -->
+        <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
+        
+        <!-- Fullscreen Toggle Button -->
+        <button class="fullscreen-toggle" onclick="toggleFullscreen()">⛶</button>
+
+        <div class="content-wrapper">
+            <!-- Power BI Section -->
+            <div class="powerbi-section">
+                <div class="powerbi-container" id="powerbiContainer">
+                    <div class="powerbi-placeholder">
+                        <h3>📊 Power BI Integration</h3>
+                        <p>Loading Power BI dashboard...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Carousel Section -->
+            <div class="carousel-section">
+                <div class="carousel-container">
+                    <div class="carousel-slide active">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop" alt="Business Team">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop" alt="Data Analytics">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop" alt="Charts and Graphs">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop" alt="Office Work">
+                    </div>
+                </div>
+                
+                <div class="carousel-indicators" id="indicators"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global interval setting (in milliseconds)
+        let carouselInterval = 3000; // Default 3 seconds
+
+        // Settings panel toggle
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('open');
+        }
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                // Enter fullscreen
+                document.documentElement.requestFullscreen().then(() => {
+                    document.body.classList.add('fullscreen-mode');
+                }).catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().then(() => {
+                        document.body.classList.remove('fullscreen-mode');
+                    });
+                }
+            }
+        }
+
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                document.body.classList.remove('fullscreen-mode');
+            }
+        });
+
+        // ESC key exits fullscreen - update class
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.fullscreenElement) {
+                document.body.classList.remove('fullscreen-mode');
+            }
+        });
+
+        // Update Power BI dashboard
+        function updatePowerBI() {
+            const url = document.getElementById('powerbiUrl').value.trim();
+            if (url) {
+                loadPowerBI(url);
+                alert('Power BI dashboard updated!');
+            } else {
+                alert('Please enter a valid Power BI URL');
+            }
+        }
+
+        // Update carousel images
+        function updateImages() {
+            const urls = document.getElementById('imageUrls').value.trim().split('\n').filter(url => url.trim() && !url.startsWith('#'));
+            if (urls.length > 0) {
+                loadCarouselImages(urls);
+                alert(`Images updated! ${urls.length} image(s) loaded.`);
+            } else {
+                alert('Please enter at least one image URL');
+            }
+        }
+
+        // Update carousel interval
+        function updateInterval() {
+            const seconds = parseInt(document.getElementById('intervalSeconds').value);
+            if (seconds && seconds > 0 && seconds <= 60) {
+                carouselInterval = seconds * 1000;
+                // Restart autoplay with new interval
+                if (window.autoPlayInterval) {
+                    clearInterval(window.autoPlayInterval);
+                }
+                startAutoPlay();
+                alert(`Interval updated to ${seconds} seconds!`);
+            } else {
+                alert('Please enter a valid interval between 1 and 60 seconds');
+            }
+        }
+
+        // Save configuration to localStorage
+        function saveConfiguration() {
+            const config = {
+                powerbiUrl: document.getElementById('powerbiUrl').value,
+                imageUrls: document.getElementById('imageUrls').value,
+                intervalSeconds: document.getElementById('intervalSeconds').value
+            };
+            
+            try {
+                localStorage.setItem('dashboardConfig', JSON.stringify(config));
+                alert('✅ Settings saved successfully!\n\nYour configuration will be loaded automatically next time you open this page.');
+            } catch (e) {
+                alert('❌ Error saving settings. Please try again.');
+                console.error('Save error:', e);
+            }
+        }
+
+        // Load configuration from localStorage
+        function loadConfiguration() {
+            try {
+                const saved = localStorage.getItem('dashboardConfig');
+                if (saved) {
+                    const config = JSON.parse(saved);
+                    
+                    // Load Power BI URL
+                    if (config.powerbiUrl) {
+                        document.getElementById('powerbiUrl').value = config.powerbiUrl;
+                        loadPowerBI(config.powerbiUrl);
+                    }
+                    
+                    // Load Image URLs
+                    if (config.imageUrls) {
+                        document.getElementById('imageUrls').value = config.imageUrls;
+                        const urls = config.imageUrls.trim().split('\n').filter(url => url.trim() && !url.startsWith('#'));
+                        if (urls.length > 0) {
+                            loadCarouselImages(urls);
+                        }
+                    }
+                    
+                    // Load Interval
+                    if (config.intervalSeconds) {
+                        document.getElementById('intervalSeconds').value = config.intervalSeconds;
+                        carouselInterval = parseInt(config.intervalSeconds) * 1000;
+                    }
+                    
+                    console.log('Configuration loaded successfully');
+                }
+            } catch (e) {
+                console.error('Load error:', e);
+            }
+        }
+
+        // Load saved configuration on page load
+        window.addEventListener('load', function() {
+            loadConfiguration();
+        });
+
+        // Load Power BI iframe
+        function loadPowerBI(url) {
+            const container = document.getElementById('powerbiContainer');
+            container.innerHTML = '';
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.setAttribute('allowFullScreen', 'true');
+            iframe.title = 'Power BI Dashboard';
+            
+            container.appendChild(iframe);
+        }
+
+        // Load carousel images
+        function loadCarouselImages(urls) {
+            const container = document.querySelector('.carousel-container');
+            container.innerHTML = '';
+            
+            urls.forEach((url, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide' + (index === 0 ? ' active' : '');
+                const img = document.createElement('img');
+                
+                let imageUrl = url.trim();
+                
+                // Handle SharePoint sharing URLs - convert to direct download/embed
+                if (imageUrl.includes('sharepoint.com')) {
+                    // Different types of SharePoint URLs
+                    
+                    // Type 1: /:u:/ or /:i:/ sharing links (most common)
+                    if (imageUrl.includes('/:u:/') || imageUrl.includes('/:i:/')) {
+                        // Extract the base URL and add embed/download parameter
+                        const baseUrl = imageUrl.split('?')[0];
+                        imageUrl = baseUrl + '?download=1';
+                    }
+                    // Type 2: Direct file path
+                    else if (imageUrl.includes('/Shared%20Documents/') || imageUrl.includes('/Documents/')) {
+                        // Already a direct path, just ensure it's accessible
+                        if (!imageUrl.includes('?')) {
+                            imageUrl = imageUrl + '?web=1';
+                        }
+                    }
+                    // Type 3: Any other SharePoint URL
+                    else if (imageUrl.includes('?')) {
+                        // Has parameters, try adding download
+                        if (!imageUrl.includes('download=')) {
+                            imageUrl = imageUrl + '&download=1';
+                        }
+                    }
+                }
+                
+                // Handle regular OneDrive links
+                else if (imageUrl.includes('onedrive.live.com') || imageUrl.includes('1drv.ms')) {
+                    if (imageUrl.includes('?')) {
+                        imageUrl = imageUrl.split('?')[0];
+                    }
+                    imageUrl = imageUrl.replace('/view', '/embed') + '?download=1';
+                }
+                
+                img.src = imageUrl;
+                img.alt = `Slide ${index + 1}`;
+                
+                // Add crossOrigin attribute for SharePoint images
+                img.crossOrigin = 'anonymous';
+                
+                img.onerror = function() {
+                    // If image fails to load, try alternative method
+                    console.error('Failed to load image:', imageUrl);
+                    
+                    // Try removing download parameter and use embed instead
+                    if (imageUrl.includes('download=1')) {
+                        const altUrl = imageUrl.replace('download=1', 'action=embedview');
+                        console.log('Trying alternative URL:', altUrl);
+                        
+                        const altImg = document.createElement('img');
+                        altImg.src = altUrl;
+                        altImg.alt = img.alt;
+                        altImg.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
+                        
+                        altImg.onerror = function() {
+                            // If still fails, show error message
+                            this.style.display = 'none';
+                            const errorDiv = document.createElement('div');
+                            errorDiv.style.cssText = 'color: #666; padding: 20px; text-align: center;';
+                            errorDiv.innerHTML = `
+                                ⚠️ Failed to load image<br>
+                                <small style="font-size: 12px;">URL: ${imageUrl.substring(0, 50)}...</small><br>
+                                <small style="font-size: 12px;">Try using direct file path or check permissions</small>
+                            `;
+                            slide.appendChild(errorDiv);
+                        };
+                        
+                        // Replace the failed image
+                        this.replaceWith(altImg);
+                    } else {
+                        // Show error message
+                        this.style.display = 'none';
+                        const errorDiv = document.createElement('div');
+                        errorDiv.style.cssText = 'color: #666; padding: 20px; text-align: center;';
+                        errorDiv.innerHTML = `
+                            ⚠️ Failed to load image<br>
+                            <small style="font-size: 12px;">Check if URL is accessible</small>
+                        `;
+                        slide.appendChild(errorDiv);
+                    }
+                };
+                
+                slide.appendChild(img);
+                container.appendChild(slide);
+            });
+            
+            // Reinitialize carousel
+            initializeCarousel();
+        }
+
+        // Initialize carousel
+        function initializeCarousel() {
+            // Clear existing indicators
+            const indicatorsContainer = document.getElementById('indicators');
+            indicatorsContainer.innerHTML = '';
+            
+            // Get all slides
+            window.slides = document.querySelectorAll('.carousel-slide');
+            window.totalSlides = slides.length;
+            window.currentSlide = 0;
+            
+            // Create indicators
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator' + (i === 0 ? ' active' : '');
+                indicator.onclick = () => goToSlide(i);
+                indicatorsContainer.appendChild(indicator);
+            }
+            
+            // Restart autoplay
+            if (window.autoPlayInterval) {
+                clearInterval(window.autoPlayInterval);
+            }
+            startAutoPlay();
+        }
+
+        // Carousel functionality
+        // Initialize window variables for global access
+        window.currentSlide = 0;
+        window.autoPlayInterval = null;
+        window.slides = document.querySelectorAll('.carousel-slide');
+        window.totalSlides = window.slides.length;
+
+        // Initialize indicators on page load
+        (function initializeInitialCarousel() {
+            const indicatorsContainer = document.getElementById('indicators');
+            for (let i = 0; i < window.totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'indicator' + (i === 0 ? ' active' : '');
+                indicator.onclick = () => goToSlide(i);
+                indicatorsContainer.appendChild(indicator);
+            }
+        })();
+
+        function showSlide(n) {
+            // Use window.slides to get the current slides
+            const currentSlides = window.slides || document.querySelectorAll('.carousel-slide');
+            const currentTotalSlides = window.totalSlides || currentSlides.length;
+            
+            currentSlides.forEach(slide => slide.classList.remove('active'));
+            document.querySelectorAll('.indicator').forEach(ind => ind.classList.remove('active'));
+            
+            window.currentSlide = (n + currentTotalSlides) % currentTotalSlides;
+            currentSlides[window.currentSlide].classList.add('active');
+            
+            const indicators = document.querySelectorAll('.indicator');
+            if (indicators[window.currentSlide]) {
+                indicators[window.currentSlide].classList.add('active');
+            }
+        }
+
+        function nextSlide() {
+            showSlide((window.currentSlide || 0) + 1);
+        }
+
+        function previousSlide() {
+            showSlide((window.currentSlide || 0) - 1);
+        }
+
+        function goToSlide(n) {
+            showSlide(n);
+        }
+
+        function startAutoPlay() {
+            window.autoPlayInterval = setInterval(() => {
+                nextSlide();
+            }, carouselInterval); // Use global interval setting
+        }
+
+        // Start auto-play on load
+        startAutoPlay();
+
+        // Power BI Integration - will be loaded by loadConfiguration() if saved
+        // Otherwise load the default
+        window.addEventListener('load', function() {
+            // Small delay to let loadConfiguration run first
+            setTimeout(function() {
+                const powerbiContainer = document.getElementById('powerbiContainer');
+                // Only load default if nothing is loaded yet
+                if (powerbiContainer && powerbiContainer.innerHTML.trim() === '') {
+                    const initialPowerBIUrl = document.getElementById('powerbiUrl').value;
+                    if (initialPowerBIUrl) {
+                        loadPowerBI(initialPowerBIUrl);
+                    }
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
