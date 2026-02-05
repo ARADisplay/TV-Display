@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Office TV Kiosk - Authenticated</title>
+    <title>Office TV Kiosk</title>
     <style>
         * {
             margin: 0;
@@ -24,98 +24,6 @@
             overflow: hidden;
         }
 
-        /* Login Screen */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #0078d4 0%, #50e6ff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            transition: opacity 0.5s ease;
-        }
-
-        .login-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .login-box {
-            background: #fff;
-            padding: 50px;
-            border-radius: 16px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .login-box h1 {
-            color: #0078d4;
-            margin-bottom: 10px;
-            font-size: 32px;
-        }
-
-        .login-box p {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .login-button {
-            background: #0078d4;
-            color: #fff;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .login-button:hover {
-            background: #106ebe;
-        }
-
-        .login-button.secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #e0e0e0;
-        }
-
-        .login-button.secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .login-status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .login-status.info {
-            background: #e7f3ff;
-            color: #0078d4;
-        }
-
-        .login-status.success {
-            background: #dff6dd;
-            color: #107c10;
-        }
-
-        .login-status.error {
-            background: #fde7e9;
-            color: #e81123;
-        }
-
         /* Slide styling */
         .slide {
             position: absolute;
@@ -134,24 +42,28 @@
             z-index: 1;
         }
 
-        /* Image slide styling */
+        /* Image slide styling with different fit options */
         .slide.image-slide {
             background-position: center;
             background-repeat: no-repeat;
         }
 
+        /* Cover - fills screen, may crop (default) */
         .slide.image-slide.fit-cover {
             background-size: cover;
         }
 
+        /* Contain - shows full image, may have black bars */
         .slide.image-slide.fit-contain {
             background-size: contain;
         }
 
+        /* Fill - stretches to fit, may distort */
         .slide.image-slide.fit-fill {
             background-size: 100% 100%;
         }
 
+        /* Actual - shows image at actual size */
         .slide.image-slide.fit-actual {
             background-size: auto;
         }
@@ -166,7 +78,7 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent 20%, transparent 80%, rgba(0,0,0,0.3));
         }
 
-        /* Power BI slide - full screen iframe */
+        /* Power BI slide styling - using div instead of iframe for better compatibility */
         .slide.powerbi-slide {
             background: #f3f2f1;
             padding: 0;
@@ -232,37 +144,6 @@
             opacity: 0.9;
         }
 
-        /* Auth indicator */
-        .auth-indicator {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 12px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .auth-indicator .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #107c10;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         /* Settings button */
         .settings-button {
             position: fixed;
@@ -294,8 +175,8 @@
         .settings-panel {
             position: fixed;
             top: 0;
-            right: -700px;
-            width: 700px;
+            right: -650px;
+            width: 650px;
             height: 100vh;
             background: #fff;
             z-index: 2000;
@@ -481,12 +362,14 @@
             background: #0e6b0e;
         }
 
+        /* Slides list */
         .slides-list {
             max-height: 400px;
             overflow-y: auto;
             padding-right: 10px;
         }
 
+        /* Overlay backdrop */
         .settings-overlay {
             position: fixed;
             top: 0;
@@ -505,6 +388,7 @@
             visibility: visible;
         }
 
+        /* Success message */
         .success-message {
             position: fixed;
             top: 30px;
@@ -535,6 +419,7 @@
             }
         }
 
+        /* Export/Import section */
         .export-import-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -552,6 +437,7 @@
             resize: vertical;
         }
 
+        /* Info box */
         .info-box {
             background: #e7f3ff;
             border-left: 4px solid #0078d4;
@@ -580,54 +466,72 @@
             color: #f59b00;
         }
 
+        /* Image fit preview */
+        .fit-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .fit-option {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .fit-option:hover {
+            border-color: #0078d4;
+            background: #f0f8ff;
+        }
+
+        .fit-option.selected {
+            border-color: #0078d4;
+            background: #0078d4;
+            color: #fff;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .settings-panel {
                 width: 100%;
                 right: -100%;
             }
+            
+            .datetime-display .time {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-box">
-            <h1>🔐 Office TV Kiosk</h1>
-            <p>This kiosk displays live Power BI reports. Please sign in with your Microsoft account to continue.</p>
-            
-            <button class="login-button" id="loginButton">
-                Sign in with Microsoft
-            </button>
-            
-            <button class="login-button secondary" id="continueAnonymous">
-                Continue Without Sign In
-            </button>
-            
-            <div class="login-status info" id="loginStatus">
-                <strong>ℹ️ Authentication Required</strong><br>
-                Power BI reports require Microsoft authentication.<br>
-                Sign in once and stay logged in automatically.
-            </div>
-        </div>
+    <div class="kiosk-container" id="kioskContainer">
+        <!-- Slides will be dynamically inserted here -->
     </div>
 
-    <div class="kiosk-container" id="kioskContainer"></div>
+    <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter">1 / 1</div>
-    
+
+    <!-- Date and Time -->
     <div class="datetime-display">
         <div class="time" id="timeDisplay">00:00</div>
         <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
     </div>
 
-    <div class="auth-indicator" id="authIndicator">
-        <div class="status-dot"></div>
-        <span id="authStatus">Signed In</span>
-    </div>
-    
+    <!-- Settings button -->
     <button class="settings-button" id="settingsButton" title="Open Settings">⚙</button>
+
+    <!-- Settings overlay -->
     <div class="settings-overlay" id="settingsOverlay"></div>
 
+    <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
             <h2>Kiosk Settings</h2>
@@ -635,16 +539,7 @@
         </div>
         
         <div class="settings-content">
-            <div class="settings-section">
-                <h3>Authentication</h3>
-                
-                <div class="info-box">
-                    <strong>✓ Signed In</strong><br>
-                    You are authenticated with Microsoft. Power BI reports will load automatically.<br>
-                    <button class="btn btn-secondary" id="signOutButton" style="margin-top: 10px;">Sign Out</button>
-                </div>
-            </div>
-
+            <!-- General Settings -->
             <div class="settings-section">
                 <h3>General Settings</h3>
                 
@@ -678,27 +573,25 @@
                 </div>
             </div>
 
+            <!-- Slides Configuration -->
             <div class="settings-section">
                 <h3>Slides</h3>
                 
-                <div class="warning-box">
-                    <strong>⚠️ Power BI Report URLs</strong><br>
-                    Use secure embed URLs for authenticated access:<br>
-                    <code>https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY</code><br><br>
-                    
-                    <strong>How to get the URL:</strong><br>
-                    1. Open report in Power BI Service<br>
-                    2. File → Embed report → Website or portal<br>
-                    3. Copy the embed URL<br>
-                    4. Paste here
-                </div>
-
                 <div class="info-box">
-                    <strong>Image URLs:</strong> Use full SharePoint URLs<br>
-                    Example: <code>https://tenant.sharepoint.com/sites/site/library/image.jpg</code>
+                    <strong>Image URLs:</strong> Use full SharePoint URLs (e.g., https://...sharepoint.com/sites/.../image.jpg)<br>
+                    <strong>Power BI:</strong> Use embed URL from Power BI Service (File > Share > Embed)
                 </div>
 
-                <div class="slides-list" id="slidesList"></div>
+                <div class="warning-box">
+                    <strong>⚠️ Power BI Tips:</strong><br>
+                    • Use "Publish to web" for public access<br>
+                    • Format: https://app.powerbi.com/view?r=XXXXXXXX<br>
+                    • Or use secure embed: https://app.powerbi.com/reportEmbed?reportId=...&groupId=...
+                </div>
+
+                <div class="slides-list" id="slidesList">
+                    <!-- Slides will be added here dynamically -->
+                </div>
 
                 <div class="button-group">
                     <button class="btn btn-secondary" id="addImageSlide">+ Add Image</button>
@@ -706,6 +599,7 @@
                 </div>
             </div>
 
+            <!-- Export/Import Configuration -->
             <div class="settings-section">
                 <h3>Backup & Restore</h3>
                 
@@ -727,6 +621,7 @@
                 </div>
             </div>
 
+            <!-- Action Buttons -->
             <div class="settings-section">
                 <div class="button-group">
                     <button class="btn btn-success" id="saveSettings">💾 Save & Apply</button>
@@ -736,79 +631,37 @@
         </div>
     </div>
 
+    <!-- Success message -->
     <div class="success-message" id="successMessage">Settings saved successfully!</div>
 
     <script>
+        // ============================================================
+        // DEFAULT CONFIGURATION
+        // ============================================================
         const DEFAULT_CONFIG = {
             slideDuration: 15000,
             powerBiDuration: 30000,
             autoRefreshHours: 24,
-            defaultImageFit: 'contain',
+            defaultImageFit: 'contain', // Changed default to contain to show full image
             slides: [
                 {
                     type: 'image',
-                    url: 'https://via.placeholder.com/1920x1080/0078d4/ffffff?text=Office+TV+Kiosk+-+Authenticated',
+                    url: 'https://via.placeholder.com/1920x1080/0078d4/ffffff?text=Welcome+to+Office+TV+Kiosk+-+Click+Settings+to+Configure',
                     duration: 15000,
                     imageFit: 'contain'
                 },
                 {
                     type: 'image',
-                    url: 'https://via.placeholder.com/1920x1080/50e6ff/000000?text=Add+Your+Power+BI+Reports+and+Images',
+                    url: 'https://via.placeholder.com/1920x1080/50e6ff/000000?text=Add+Your+SharePoint+Images+and+Power+BI+Reports',
                     duration: 15000,
                     imageFit: 'contain'
                 }
             ]
         };
 
-        class AuthManager {
-            constructor() {
-                this.authenticated = false;
-                this.checkAuthStatus();
-            }
-
-            checkAuthStatus() {
-                // Check if user is authenticated by checking sessionStorage
-                this.authenticated = sessionStorage.getItem('powerbi_authenticated') === 'true';
-                return this.authenticated;
-            }
-
-            async login() {
-                // Show login status
-                const loginStatus = document.getElementById('loginStatus');
-                loginStatus.className = 'login-status info';
-                loginStatus.innerHTML = '<strong>🔄 Redirecting to Microsoft Login...</strong><br>You will be redirected to sign in with your Microsoft account.';
-
-                // Wait a moment for user to see the message
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                // Redirect to Power BI Service for authentication
-                // When user is redirected back, they'll be authenticated
-                // We'll use a hidden iframe to trigger the auth flow
-                const authUrl = 'https://app.powerbi.com/';
-                
-                // Open in same window to trigger auth
-                window.location.href = authUrl + '?source=kiosk&return=' + encodeURIComponent(window.location.href);
-            }
-
-            continueAnonymous() {
-                // Allow continuing without auth (for images only)
-                sessionStorage.setItem('powerbi_authenticated', 'anonymous');
-                this.authenticated = 'anonymous';
-                return true;
-            }
-
-            markAuthenticated() {
-                sessionStorage.setItem('powerbi_authenticated', 'true');
-                this.authenticated = true;
-            }
-
-            signOut() {
-                sessionStorage.removeItem('powerbi_authenticated');
-                this.authenticated = false;
-                location.reload();
-            }
-        }
-
+        // ============================================================
+        // STORAGE MANAGER
+        // ============================================================
         class StorageManager {
             static STORAGE_KEY = 'tv_kiosk_config';
 
@@ -843,13 +696,16 @@
             }
         }
 
+        // ============================================================
+        // SETTINGS UI MANAGER
+        // ============================================================
         class SettingsUI {
-            constructor(kiosk, authManager) {
+            constructor(kiosk) {
                 this.kiosk = kiosk;
-                this.authManager = authManager;
                 this.settingsPanel = document.getElementById('settingsPanel');
                 this.settingsOverlay = document.getElementById('settingsOverlay');
                 this.slidesList = document.getElementById('slidesList');
+                
                 this.setupEventListeners();
             }
 
@@ -857,13 +713,15 @@
                 document.getElementById('settingsButton').addEventListener('click', () => this.open());
                 document.getElementById('closeSettings').addEventListener('click', () => this.close());
                 this.settingsOverlay.addEventListener('click', () => this.close());
+
                 document.getElementById('addImageSlide').addEventListener('click', () => this.addSlide('image'));
                 document.getElementById('addPowerBISlide').addEventListener('click', () => this.addSlide('powerbi'));
+
                 document.getElementById('saveSettings').addEventListener('click', () => this.save());
                 document.getElementById('resetSettings').addEventListener('click', () => this.reset());
+
                 document.getElementById('copyExport').addEventListener('click', () => this.copyExport());
                 document.getElementById('loadImport').addEventListener('click', () => this.loadImport());
-                document.getElementById('signOutButton').addEventListener('click', () => this.authManager.signOut());
 
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape' && this.settingsPanel.classList.contains('open')) {
@@ -887,16 +745,19 @@
 
             loadCurrentSettings() {
                 const config = this.kiosk.config;
+
                 document.getElementById('slideDuration').value = config.slideDuration / 1000;
                 document.getElementById('powerBiDuration').value = config.powerBiDuration / 1000;
                 document.getElementById('autoRefreshHours').value = config.autoRefreshHours;
                 document.getElementById('defaultImageFit').value = config.defaultImageFit || 'contain';
+
                 this.renderSlides(config.slides);
                 this.updateExportConfig();
             }
 
             renderSlides(slides) {
                 this.slidesList.innerHTML = '';
+                
                 slides.forEach((slide, index) => {
                     const slideItem = this.createSlideItem(slide, index);
                     this.slidesList.appendChild(slideItem);
@@ -920,6 +781,7 @@
                             <option value="fill" ${slide.imageFit === 'fill' ? 'selected' : ''}>Fill (stretch)</option>
                             <option value="actual" ${slide.imageFit === 'actual' ? 'selected' : ''}>Actual Size</option>
                         </select>
+                        <small>How this image should fit on screen</small>
                     </div>
                 ` : '';
 
@@ -931,17 +793,19 @@
                     <div class="form-group">
                         <label>${urlLabel}</label>
                         <input type="text" class="slide-url" value="${slide.url || slide.embedUrl || ''}" 
-                               placeholder="${slide.type === 'powerbi' ? 'https://app.powerbi.com/reportEmbed?reportId=...' : 'https://tenant.sharepoint.com/.../image.jpg'}">
-                        <small>${slide.type === 'powerbi' ? 'Secure embed URL from Power BI Service' : 'Full SharePoint URL'}</small>
+                               placeholder="${slide.type === 'powerbi' ? 'https://app.powerbi.com/view?r=...' : 'https://tenant.sharepoint.com/.../image.jpg'}">
+                        <small>${slide.type === 'powerbi' ? 'Use "Publish to web" URL or secure embed URL' : 'Full SharePoint URL to your image'}</small>
                     </div>
                     ${imageFitSection}
                     <div class="form-group">
                         <label>Duration (seconds)</label>
-                        <input type="number" class="slide-duration" value="${slide.duration / 1000}" min="5" max="600">
+                        <input type="number" class="slide-duration" value="${slide.duration / 1000}" 
+                               min="5" max="600">
                     </div>
                 `;
 
                 div.querySelector('.remove-slide').addEventListener('click', () => this.removeSlide(index));
+
                 return div;
             }
 
@@ -954,6 +818,7 @@
                     duration: type === 'powerbi' ? 30000 : 15000,
                     imageFit: type === 'image' ? (config.defaultImageFit || 'contain') : undefined
                 };
+
                 config.slides.push(newSlide);
                 this.renderSlides(config.slides);
                 this.slidesList.scrollTop = this.slidesList.scrollHeight;
@@ -1004,10 +869,12 @@
 
             save() {
                 const config = this.getCurrentConfig();
+
                 if (config.slides.length === 0) {
                     alert('Please add at least one slide!');
                     return;
                 }
+
                 if (StorageManager.save(config)) {
                     this.kiosk.updateConfig(config);
                     this.showSuccess('Settings saved successfully!');
@@ -1035,10 +902,12 @@
                 this.updateExportConfig();
                 const textarea = document.getElementById('exportConfig');
                 textarea.select();
+                
                 try {
                     document.execCommand('copy');
                     this.showSuccess('Configuration copied to clipboard!');
                 } catch (err) {
+                    // Fallback for modern browsers
                     navigator.clipboard.writeText(textarea.value).then(() => {
                         this.showSuccess('Configuration copied to clipboard!');
                     }).catch(() => {
@@ -1049,15 +918,19 @@
 
             loadImport() {
                 const importText = document.getElementById('importConfig').value.trim();
+                
                 if (!importText) {
                     alert('Please paste a configuration first!');
                     return;
                 }
+
                 try {
                     const config = JSON.parse(importText);
+                    
                     if (!config.slides || !Array.isArray(config.slides)) {
                         throw new Error('Invalid configuration format');
                     }
+
                     if (StorageManager.save(config)) {
                         this.kiosk.updateConfig(config);
                         this.loadCurrentSettings();
@@ -1073,21 +946,30 @@
                 const successMsg = document.getElementById('successMessage');
                 successMsg.textContent = message;
                 successMsg.classList.add('show');
-                setTimeout(() => successMsg.classList.remove('show'), 3000);
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
             }
         }
 
+        // ============================================================
+        // KIOSK APPLICATION
+        // ============================================================
         class TVKiosk {
             constructor(config) {
                 this.config = config;
                 this.currentSlideIndex = 0;
                 this.slides = [];
+                this.progressInterval = null;
                 this.slideTimeout = null;
                 this.isTransitioning = false;
                 this.isPaused = false;
+                
                 this.container = document.getElementById('kioskContainer');
                 this.progressBar = document.getElementById('progressBar');
                 this.slideCounter = document.getElementById('slideCounter');
+                
                 this.init();
             }
 
@@ -1112,8 +994,11 @@
                     
                     if (slideConfig.type === 'image') {
                         slide.classList.add('image-slide');
+                        
+                        // Apply image fit class
                         const imageFit = slideConfig.imageFit || this.config.defaultImageFit || 'contain';
                         slide.classList.add(`fit-${imageFit}`);
+                        
                         slide.style.backgroundImage = `url('${slideConfig.url}')`;
                         
                         const img = new Image();
@@ -1131,13 +1016,17 @@
                     }
                     
                     this.container.appendChild(slide);
-                    this.slides.push({ element: slide, config: slideConfig });
+                    this.slides.push({
+                        element: slide,
+                        config: slideConfig
+                    });
                 });
                 
                 if (this.slides.length > 0) {
                     this.slides[0].element.classList.add('active');
                     this.updateCounter();
                 }
+                
                 console.log(`Created ${this.slides.length} slides`);
             }
 
@@ -1148,8 +1037,10 @@
 
             showSlide(index) {
                 if (this.isTransitioning || this.isPaused) return;
+                
                 this.isTransitioning = true;
                 this.currentSlideIndex = index;
+                
                 this.slides.forEach(slide => slide.element.classList.remove('active'));
                 this.slides[index].element.classList.add('active');
                 this.updateCounter();
@@ -1174,7 +1065,9 @@
             }
 
             updateCounter() {
-                this.slideCounter.textContent = `${this.currentSlideIndex + 1} / ${this.slides.length}`;
+                const current = this.currentSlideIndex + 1;
+                const total = this.slides.length;
+                this.slideCounter.textContent = `${current} / ${total}`;
             }
 
             setupClock() {
@@ -1183,9 +1076,11 @@
                     const hours = now.getHours().toString().padStart(2, '0');
                     const minutes = now.getMinutes().toString().padStart(2, '0');
                     document.getElementById('timeDisplay').textContent = `${hours}:${minutes}`;
+                    
                     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
                 };
+                
                 updateClock();
                 setInterval(updateClock, 1000);
             }
@@ -1199,6 +1094,7 @@
             setupKeyboardControls() {
                 document.addEventListener('keydown', (e) => {
                     if (document.getElementById('settingsPanel').classList.contains('open')) return;
+                    
                     switch(e.key) {
                         case 'ArrowRight':
                         case 'n':
@@ -1210,7 +1106,11 @@
                             break;
                         case ' ':
                         case 'k':
-                            this.isPaused ? this.resume() : this.pause();
+                            if (this.isPaused) {
+                                this.resume();
+                            } else {
+                                this.pause();
+                            }
                             break;
                     }
                 });
@@ -1219,6 +1119,7 @@
             setupWakeLock() {
                 if ('wakeLock' in navigator) {
                     let wakeLock = null;
+                    
                     const requestWakeLock = async () => {
                         try {
                             wakeLock = await navigator.wakeLock.request('screen');
@@ -1227,9 +1128,13 @@
                             console.error('Wake lock error:', err);
                         }
                     };
+                    
                     requestWakeLock();
+                    
                     document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible') requestWakeLock();
+                        if (document.visibilityState === 'visible') {
+                            requestWakeLock();
+                        }
                     });
                 }
             }
@@ -1247,6 +1152,7 @@
             pause() {
                 this.isPaused = true;
                 clearTimeout(this.slideTimeout);
+                this.progressBar.style.animationPlayState = 'paused';
                 console.log('Carousel paused');
             }
 
@@ -1261,64 +1167,36 @@
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                this.showSlide((this.currentSlideIndex + 1) % this.slides.length);
+                const nextIndex = (this.currentSlideIndex + 1) % this.slides.length;
+                this.showSlide(nextIndex);
             }
 
             previous() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                this.showSlide((this.currentSlideIndex - 1 + this.slides.length) % this.slides.length);
+                const prevIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
+                this.showSlide(prevIndex);
             }
         }
 
-        // Initialize app
-        let kiosk, settingsUI, authManager;
+        // ============================================================
+        // INITIALIZE APPLICATION
+        // ============================================================
+        let kiosk, settingsUI;
         
         window.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, starting kiosk...');
             
-            // Initialize auth manager
-            authManager = new AuthManager();
+            const savedConfig = StorageManager.load();
+            const config = savedConfig || DEFAULT_CONFIG;
             
-            // Check if coming back from Power BI auth
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('source') === 'kiosk') {
-                // User came back from Power BI, mark as authenticated
-                authManager.markAuthenticated();
-                // Clean up URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
+            kiosk = new TVKiosk(config);
+            settingsUI = new SettingsUI(kiosk);
             
-            // Setup login screen handlers
-            document.getElementById('loginButton').addEventListener('click', () => {
-                authManager.login();
-            });
-            
-            document.getElementById('continueAnonymous').addEventListener('click', () => {
-                authManager.continueAnonymous();
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('authStatus').textContent = 'Anonymous Mode';
-                initializeKiosk();
-            });
-            
-            // If already authenticated, hide login screen and start kiosk
-            if (authManager.checkAuthStatus()) {
-                document.getElementById('loginScreen').classList.add('hidden');
-                if (authManager.authenticated === 'anonymous') {
-                    document.getElementById('authStatus').textContent = 'Anonymous Mode';
-                }
-                initializeKiosk();
-            }
-            
-            function initializeKiosk() {
-                const savedConfig = StorageManager.load();
-                const config = savedConfig || DEFAULT_CONFIG;
-                kiosk = new TVKiosk(config);
-                settingsUI = new SettingsUI(kiosk, authManager);
-                window.kiosk = kiosk;
-                console.log('Kiosk initialized.');
-            }
+            window.kiosk = kiosk;
+            console.log('Kiosk initialized. Use window.kiosk for debugging');
+            console.log('Press Settings button (⚙) to configure');
         });
     </script>
 </body>
