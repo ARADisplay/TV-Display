@@ -15,7 +15,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000;
             overflow: hidden;
-            cursor: none; /* Hide cursor for kiosk mode */
         }
 
         .kiosk-container {
@@ -43,11 +42,30 @@
             z-index: 1;
         }
 
-        /* Image slide styling */
+        /* Image slide styling with different fit options */
         .slide.image-slide {
-            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        /* Cover - fills screen, may crop (default) */
+        .slide.image-slide.fit-cover {
+            background-size: cover;
+        }
+
+        /* Contain - shows full image, may have black bars */
+        .slide.image-slide.fit-contain {
+            background-size: contain;
+        }
+
+        /* Fill - stretches to fit, may distort */
+        .slide.image-slide.fit-fill {
+            background-size: 100% 100%;
+        }
+
+        /* Actual - shows image at actual size */
+        .slide.image-slide.fit-actual {
+            background-size: auto;
         }
 
         .slide.image-slide::before {
@@ -60,12 +78,16 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent 20%, transparent 80%, rgba(0,0,0,0.3));
         }
 
-        /* Power BI slide styling */
+        /* Power BI slide styling - using div instead of iframe for better compatibility */
+        .slide.powerbi-slide {
+            background: #f3f2f1;
+            padding: 0;
+        }
+
         .slide.powerbi-slide iframe {
             width: 100%;
             height: 100%;
             border: none;
-            background: #fff;
         }
 
         /* Progress bar */
@@ -97,33 +119,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Loading indicator */
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2000;
-            display: none;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #0078d4;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* Date and Time display */
         .datetime-display {
             position: fixed;
@@ -149,60 +144,273 @@
             opacity: 0.9;
         }
 
-        /* Welcome message (optional) */
-        .welcome-overlay {
+        /* Settings button */
+        .settings-button {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 120, 212, 0.9);
             color: #fff;
-            z-index: 100;
-            opacity: 0;
-            animation: fadeInOut 8s ease-in-out;
-            pointer-events: none;
-        }
-
-        .welcome-overlay h1 {
-            font-size: 72px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .welcome-overlay p {
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 24px;
-            opacity: 0.9;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 120, 212, 0.4);
         }
 
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
+        .settings-button:hover {
+            background: rgba(0, 120, 212, 1);
+            transform: rotate(90deg) scale(1.1);
         }
 
-        /* Error message */
-        .error-message {
+        /* Settings Panel */
+        .settings-panel {
             position: fixed;
-            bottom: 50px;
+            top: 0;
+            right: -650px;
+            width: 650px;
+            height: 100vh;
+            background: #fff;
+            z-index: 2000;
+            transition: right 0.3s ease;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-header {
+            background: linear-gradient(135deg, #0078d4, #50e6ff);
+            color: #fff;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .close-settings {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: #fff;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-settings:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .settings-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .settings-section {
+            margin-bottom: 35px;
+        }
+
+        .settings-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0078d4;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .slide-item {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .slide-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .slide-item-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0078d4;
+        }
+
+        .remove-slide {
+            background: #e81123;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .remove-slide:hover {
+            background: #c50f1f;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0078d4;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #106ebe;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-success {
+            background: #107c10;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #0e6b0e;
+        }
+
+        /* Slides list */
+        .slides-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Overlay backdrop */
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .settings-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Success message */
+        .success-message {
+            position: fixed;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(232, 17, 35, 0.9);
+            background: #107c10;
             color: #fff;
             padding: 15px 30px;
             border-radius: 8px;
-            z-index: 1000;
+            z-index: 3000;
             display: none;
-            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+            box-shadow: 0 4px 20px rgba(16, 124, 16, 0.4);
         }
 
-        .error-message.show {
+        .success-message.show {
             display: block;
-            animation: slideUp 0.3s ease-out;
         }
 
-        @keyframes slideUp {
+        @keyframes slideDown {
             from {
-                transform: translate(-50%, 100px);
+                transform: translate(-50%, -100px);
                 opacity: 0;
             }
             to {
@@ -211,13 +419,91 @@
             }
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1024px) {
-            .datetime-display .time {
-                font-size: 24px;
+        /* Export/Import section */
+        .export-import-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        textarea.config-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+
+        /* Info box */
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0078d4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #0078d4;
+        }
+
+        .warning-box {
+            background: #fff4ce;
+            border-left: 4px solid #f59b00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .warning-box strong {
+            color: #f59b00;
+        }
+
+        /* Image fit preview */
+        .fit-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .fit-option {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .fit-option:hover {
+            border-color: #0078d4;
+            background: #f0f8ff;
+        }
+
+        .fit-option.selected {
+            border-color: #0078d4;
+            background: #0078d4;
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-panel {
+                width: 100%;
+                right: -100%;
             }
-            .welcome-overlay h1 {
-                font-size: 48px;
+            
+            .datetime-display .time {
+                font-size: 20px;
             }
         }
     </style>
@@ -239,62 +525,433 @@
         <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
     </div>
 
-    <!-- Loading indicator -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
+    <!-- Settings button -->
+    <button class="settings-button" id="settingsButton" title="Open Settings">⚙</button>
+
+    <!-- Settings overlay -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>Kiosk Settings</h2>
+            <button class="close-settings" id="closeSettings">×</button>
+        </div>
+        
+        <div class="settings-content">
+            <!-- General Settings -->
+            <div class="settings-section">
+                <h3>General Settings</h3>
+                
+                <div class="form-group">
+                    <label>Default Slide Duration (seconds)</label>
+                    <input type="number" id="slideDuration" min="5" max="300" value="15">
+                    <small>How long to show each image slide (5-300 seconds)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Power BI Duration (seconds)</label>
+                    <input type="number" id="powerBiDuration" min="10" max="600" value="30">
+                    <small>How long to show Power BI reports (10-600 seconds)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Auto-Refresh (hours)</label>
+                    <input type="number" id="autoRefreshHours" min="1" max="168" value="24">
+                    <small>Automatically reload page every X hours (1-168)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Default Image Fit</label>
+                    <select id="defaultImageFit">
+                        <option value="cover">Cover (fill screen, may crop)</option>
+                        <option value="contain">Contain (show full image, may have bars)</option>
+                        <option value="fill">Fill (stretch to fit)</option>
+                        <option value="actual">Actual Size (no scaling)</option>
+                    </select>
+                    <small>How images should fit on screen by default</small>
+                </div>
+            </div>
+
+            <!-- Slides Configuration -->
+            <div class="settings-section">
+                <h3>Slides</h3>
+                
+                <div class="info-box">
+                    <strong>Image URLs:</strong> Use full SharePoint URLs (e.g., https://...sharepoint.com/sites/.../image.jpg)<br>
+                    <strong>Power BI:</strong> Use embed URL from Power BI Service (File > Share > Embed)
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Power BI Tips:</strong><br>
+                    • Use "Publish to web" for public access<br>
+                    • Format: https://app.powerbi.com/view?r=XXXXXXXX<br>
+                    • Or use secure embed: https://app.powerbi.com/reportEmbed?reportId=...&groupId=...
+                </div>
+
+                <div class="slides-list" id="slidesList">
+                    <!-- Slides will be added here dynamically -->
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="addImageSlide">+ Add Image</button>
+                    <button class="btn btn-secondary" id="addPowerBISlide">+ Add Power BI</button>
+                </div>
+            </div>
+
+            <!-- Export/Import Configuration -->
+            <div class="settings-section">
+                <h3>Backup & Restore</h3>
+                
+                <div class="form-group">
+                    <label>Export Configuration</label>
+                    <textarea class="config-textarea" id="exportConfig" readonly></textarea>
+                    <small>Copy this to backup your configuration</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Import Configuration</label>
+                    <textarea class="config-textarea" id="importConfig" placeholder="Paste configuration JSON here..."></textarea>
+                    <small>Paste a previously exported configuration</small>
+                </div>
+
+                <div class="export-import-group">
+                    <button class="btn btn-secondary" id="copyExport">Copy to Clipboard</button>
+                    <button class="btn btn-secondary" id="loadImport">Load Configuration</button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="settings-section">
+                <div class="button-group">
+                    <button class="btn btn-success" id="saveSettings">💾 Save & Apply</button>
+                    <button class="btn btn-secondary" id="resetSettings">Reset to Default</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Error message -->
-    <div class="error-message" id="errorMessage"></div>
+    <!-- Success message -->
+    <div class="success-message" id="successMessage">Settings saved successfully!</div>
 
     <script>
         // ============================================================
-        // CONFIGURATION - Edit this section
+        // DEFAULT CONFIGURATION
         // ============================================================
-        const CONFIG = {
-            // Slide duration in milliseconds (default: 15 seconds)
+        const DEFAULT_CONFIG = {
             slideDuration: 15000,
-            
-            // Power BI reports duration (longer for dashboards)
             powerBiDuration: 30000,
-            
-            // Auto-refresh interval (reload page every X hours to get fresh data)
             autoRefreshHours: 24,
-            
-            // Slides configuration
+            defaultImageFit: 'contain', // Changed default to contain to show full image
             slides: [
-                // Image slides - use SharePoint image URLs
                 {
                     type: 'image',
-                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image1.jpg',
-                    duration: 15000
+                    url: 'https://via.placeholder.com/1920x1080/0078d4/ffffff?text=Welcome+to+Office+TV+Kiosk+-+Click+Settings+to+Configure',
+                    duration: 15000,
+                    imageFit: 'contain'
                 },
                 {
                     type: 'image',
-                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image2.jpg',
-                    duration: 15000
-                },
-                
-                // Power BI report slides
-                {
-                    type: 'powerbi',
-                    embedUrl: 'https://app.powerbi.com/view?r=YOUR_REPORT_ID',
-                    duration: 30000
-                },
-                
-                {
-                    type: 'image',
-                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image3.jpg',
-                    duration: 15000
-                },
-                
-                {
-                    type: 'powerbi',
-                    embedUrl: 'https://app.powerbi.com/view?r=ANOTHER_REPORT_ID',
-                    duration: 30000
+                    url: 'https://via.placeholder.com/1920x1080/50e6ff/000000?text=Add+Your+SharePoint+Images+and+Power+BI+Reports',
+                    duration: 15000,
+                    imageFit: 'contain'
                 }
             ]
         };
+
+        // ============================================================
+        // STORAGE MANAGER
+        // ============================================================
+        class StorageManager {
+            static STORAGE_KEY = 'tv_kiosk_config';
+
+            static save(config) {
+                try {
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
+                    return true;
+                } catch (error) {
+                    console.error('Failed to save configuration:', error);
+                    return false;
+                }
+            }
+
+            static load() {
+                try {
+                    const data = localStorage.getItem(this.STORAGE_KEY);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error('Failed to load configuration:', error);
+                    return null;
+                }
+            }
+
+            static clear() {
+                try {
+                    localStorage.removeItem(this.STORAGE_KEY);
+                    return true;
+                } catch (error) {
+                    console.error('Failed to clear configuration:', error);
+                    return false;
+                }
+            }
+        }
+
+        // ============================================================
+        // SETTINGS UI MANAGER
+        // ============================================================
+        class SettingsUI {
+            constructor(kiosk) {
+                this.kiosk = kiosk;
+                this.settingsPanel = document.getElementById('settingsPanel');
+                this.settingsOverlay = document.getElementById('settingsOverlay');
+                this.slidesList = document.getElementById('slidesList');
+                
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('settingsButton').addEventListener('click', () => this.open());
+                document.getElementById('closeSettings').addEventListener('click', () => this.close());
+                this.settingsOverlay.addEventListener('click', () => this.close());
+
+                document.getElementById('addImageSlide').addEventListener('click', () => this.addSlide('image'));
+                document.getElementById('addPowerBISlide').addEventListener('click', () => this.addSlide('powerbi'));
+
+                document.getElementById('saveSettings').addEventListener('click', () => this.save());
+                document.getElementById('resetSettings').addEventListener('click', () => this.reset());
+
+                document.getElementById('copyExport').addEventListener('click', () => this.copyExport());
+                document.getElementById('loadImport').addEventListener('click', () => this.loadImport());
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.settingsPanel.classList.contains('open')) {
+                        this.close();
+                    }
+                });
+            }
+
+            open() {
+                this.loadCurrentSettings();
+                this.settingsPanel.classList.add('open');
+                this.settingsOverlay.classList.add('active');
+                this.kiosk.pause();
+            }
+
+            close() {
+                this.settingsPanel.classList.remove('open');
+                this.settingsOverlay.classList.remove('active');
+                this.kiosk.resume();
+            }
+
+            loadCurrentSettings() {
+                const config = this.kiosk.config;
+
+                document.getElementById('slideDuration').value = config.slideDuration / 1000;
+                document.getElementById('powerBiDuration').value = config.powerBiDuration / 1000;
+                document.getElementById('autoRefreshHours').value = config.autoRefreshHours;
+                document.getElementById('defaultImageFit').value = config.defaultImageFit || 'contain';
+
+                this.renderSlides(config.slides);
+                this.updateExportConfig();
+            }
+
+            renderSlides(slides) {
+                this.slidesList.innerHTML = '';
+                
+                slides.forEach((slide, index) => {
+                    const slideItem = this.createSlideItem(slide, index);
+                    this.slidesList.appendChild(slideItem);
+                });
+            }
+
+            createSlideItem(slide, index) {
+                const div = document.createElement('div');
+                div.className = 'slide-item';
+                div.dataset.index = index;
+
+                const type = slide.type === 'powerbi' ? 'Power BI' : 'Image';
+                const urlLabel = slide.type === 'powerbi' ? 'Power BI Embed URL' : 'Image URL';
+                
+                const imageFitSection = slide.type === 'image' ? `
+                    <div class="form-group">
+                        <label>Image Fit</label>
+                        <select class="slide-image-fit">
+                            <option value="cover" ${slide.imageFit === 'cover' ? 'selected' : ''}>Cover (fill screen)</option>
+                            <option value="contain" ${slide.imageFit === 'contain' || !slide.imageFit ? 'selected' : ''}>Contain (show full image)</option>
+                            <option value="fill" ${slide.imageFit === 'fill' ? 'selected' : ''}>Fill (stretch)</option>
+                            <option value="actual" ${slide.imageFit === 'actual' ? 'selected' : ''}>Actual Size</option>
+                        </select>
+                        <small>How this image should fit on screen</small>
+                    </div>
+                ` : '';
+
+                div.innerHTML = `
+                    <div class="slide-item-header">
+                        <h4>Slide ${index + 1}: ${type}</h4>
+                        <button class="remove-slide" data-index="${index}">Remove</button>
+                    </div>
+                    <div class="form-group">
+                        <label>${urlLabel}</label>
+                        <input type="text" class="slide-url" value="${slide.url || slide.embedUrl || ''}" 
+                               placeholder="${slide.type === 'powerbi' ? 'https://app.powerbi.com/view?r=...' : 'https://tenant.sharepoint.com/.../image.jpg'}">
+                        <small>${slide.type === 'powerbi' ? 'Use "Publish to web" URL or secure embed URL' : 'Full SharePoint URL to your image'}</small>
+                    </div>
+                    ${imageFitSection}
+                    <div class="form-group">
+                        <label>Duration (seconds)</label>
+                        <input type="number" class="slide-duration" value="${slide.duration / 1000}" 
+                               min="5" max="600">
+                    </div>
+                `;
+
+                div.querySelector('.remove-slide').addEventListener('click', () => this.removeSlide(index));
+
+                return div;
+            }
+
+            addSlide(type) {
+                const config = this.getCurrentConfig();
+                const newSlide = {
+                    type: type,
+                    url: type === 'image' ? '' : undefined,
+                    embedUrl: type === 'powerbi' ? '' : undefined,
+                    duration: type === 'powerbi' ? 30000 : 15000,
+                    imageFit: type === 'image' ? (config.defaultImageFit || 'contain') : undefined
+                };
+
+                config.slides.push(newSlide);
+                this.renderSlides(config.slides);
+                this.slidesList.scrollTop = this.slidesList.scrollHeight;
+            }
+
+            removeSlide(index) {
+                const config = this.getCurrentConfig();
+                config.slides.splice(index, 1);
+                this.renderSlides(config.slides);
+            }
+
+            getCurrentConfig() {
+                const config = {
+                    slideDuration: parseInt(document.getElementById('slideDuration').value) * 1000,
+                    powerBiDuration: parseInt(document.getElementById('powerBiDuration').value) * 1000,
+                    autoRefreshHours: parseInt(document.getElementById('autoRefreshHours').value),
+                    defaultImageFit: document.getElementById('defaultImageFit').value,
+                    slides: []
+                };
+
+                const slideItems = this.slidesList.querySelectorAll('.slide-item');
+                slideItems.forEach(item => {
+                    const index = parseInt(item.dataset.index);
+                    const originalSlide = this.kiosk.config.slides[index];
+                    const url = item.querySelector('.slide-url').value.trim();
+                    const duration = parseInt(item.querySelector('.slide-duration').value) * 1000;
+
+                    if (url) {
+                        const slide = {
+                            type: originalSlide.type,
+                            duration: duration
+                        };
+
+                        if (originalSlide.type === 'powerbi') {
+                            slide.embedUrl = url;
+                        } else {
+                            slide.url = url;
+                            const imageFitSelect = item.querySelector('.slide-image-fit');
+                            slide.imageFit = imageFitSelect ? imageFitSelect.value : 'contain';
+                        }
+
+                        config.slides.push(slide);
+                    }
+                });
+
+                return config;
+            }
+
+            save() {
+                const config = this.getCurrentConfig();
+
+                if (config.slides.length === 0) {
+                    alert('Please add at least one slide!');
+                    return;
+                }
+
+                if (StorageManager.save(config)) {
+                    this.kiosk.updateConfig(config);
+                    this.showSuccess('Settings saved successfully!');
+                    setTimeout(() => this.close(), 1000);
+                } else {
+                    alert('Failed to save settings. Please check browser storage permissions.');
+                }
+            }
+
+            reset() {
+                if (confirm('Reset to default configuration? This will remove all your slides and settings.')) {
+                    StorageManager.clear();
+                    this.kiosk.updateConfig(DEFAULT_CONFIG);
+                    this.loadCurrentSettings();
+                    this.showSuccess('Settings reset to default');
+                }
+            }
+
+            updateExportConfig() {
+                const config = this.getCurrentConfig();
+                document.getElementById('exportConfig').value = JSON.stringify(config, null, 2);
+            }
+
+            copyExport() {
+                this.updateExportConfig();
+                const textarea = document.getElementById('exportConfig');
+                textarea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    this.showSuccess('Configuration copied to clipboard!');
+                } catch (err) {
+                    // Fallback for modern browsers
+                    navigator.clipboard.writeText(textarea.value).then(() => {
+                        this.showSuccess('Configuration copied to clipboard!');
+                    }).catch(() => {
+                        alert('Please manually copy the configuration text');
+                    });
+                }
+            }
+
+            loadImport() {
+                const importText = document.getElementById('importConfig').value.trim();
+                
+                if (!importText) {
+                    alert('Please paste a configuration first!');
+                    return;
+                }
+
+                try {
+                    const config = JSON.parse(importText);
+                    
+                    if (!config.slides || !Array.isArray(config.slides)) {
+                        throw new Error('Invalid configuration format');
+                    }
+
+                    if (StorageManager.save(config)) {
+                        this.kiosk.updateConfig(config);
+                        this.loadCurrentSettings();
+                        this.showSuccess('Configuration imported successfully!');
+                        document.getElementById('importConfig').value = '';
+                    }
+                } catch (error) {
+                    alert('Invalid configuration format: ' + error.message);
+                }
+            }
+
+            showSuccess(message) {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.textContent = message;
+                successMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
 
         // ============================================================
         // KIOSK APPLICATION
@@ -307,12 +964,11 @@
                 this.progressInterval = null;
                 this.slideTimeout = null;
                 this.isTransitioning = false;
+                this.isPaused = false;
                 
                 this.container = document.getElementById('kioskContainer');
                 this.progressBar = document.getElementById('progressBar');
                 this.slideCounter = document.getElementById('slideCounter');
-                this.loading = document.getElementById('loading');
-                this.errorMessage = document.getElementById('errorMessage');
                 
                 this.init();
             }
@@ -323,11 +979,13 @@
                 this.setupClock();
                 this.startCarousel();
                 this.setupAutoRefresh();
-                this.setupErrorHandling();
+                this.setupKeyboardControls();
+                this.setupWakeLock();
             }
 
             createSlides() {
-                this.container.innerHTML = ''; // Clear existing slides
+                this.container.innerHTML = '';
+                this.slides = [];
                 
                 this.config.slides.forEach((slideConfig, index) => {
                     const slide = document.createElement('div');
@@ -336,18 +994,24 @@
                     
                     if (slideConfig.type === 'image') {
                         slide.classList.add('image-slide');
+                        
+                        // Apply image fit class
+                        const imageFit = slideConfig.imageFit || this.config.defaultImageFit || 'contain';
+                        slide.classList.add(`fit-${imageFit}`);
+                        
                         slide.style.backgroundImage = `url('${slideConfig.url}')`;
                         
-                        // Preload image
                         const img = new Image();
                         img.src = slideConfig.url;
-                        img.onerror = () => this.showError(`Failed to load image: ${slideConfig.url}`);
+                        img.onerror = () => console.error(`Failed to load image: ${slideConfig.url}`);
                         
                     } else if (slideConfig.type === 'powerbi') {
                         slide.classList.add('powerbi-slide');
                         const iframe = document.createElement('iframe');
                         iframe.src = slideConfig.embedUrl;
                         iframe.allowFullscreen = true;
+                        iframe.setAttribute('frameborder', '0');
+                        iframe.setAttribute('allowtransparency', 'true');
                         slide.appendChild(iframe);
                     }
                     
@@ -358,7 +1022,6 @@
                     });
                 });
                 
-                // Show first slide
                 if (this.slides.length > 0) {
                     this.slides[0].element.classList.add('active');
                     this.updateCounter();
@@ -368,34 +1031,23 @@
             }
 
             startCarousel() {
-                if (this.slides.length === 0) {
-                    this.showError('No slides configured');
-                    return;
-                }
-
+                if (this.slides.length === 0) return;
                 this.showSlide(0);
             }
 
             showSlide(index) {
-                if (this.isTransitioning) return;
+                if (this.isTransitioning || this.isPaused) return;
                 
                 this.isTransitioning = true;
                 this.currentSlideIndex = index;
                 
-                // Hide all slides
-                this.slides.forEach(slide => {
-                    slide.element.classList.remove('active');
-                });
-                
-                // Show current slide
+                this.slides.forEach(slide => slide.element.classList.remove('active'));
                 this.slides[index].element.classList.add('active');
                 this.updateCounter();
                 
-                // Reset and start progress bar
                 const duration = this.slides[index].config.duration || this.config.slideDuration;
                 this.animateProgressBar(duration);
                 
-                // Schedule next slide
                 clearTimeout(this.slideTimeout);
                 this.slideTimeout = setTimeout(() => {
                     this.isTransitioning = false;
@@ -405,14 +1057,9 @@
             }
 
             animateProgressBar(duration) {
-                // Reset progress bar
                 this.progressBar.style.transition = 'none';
                 this.progressBar.style.width = '0%';
-                
-                // Force reflow
                 this.progressBar.offsetHeight;
-                
-                // Animate
                 this.progressBar.style.transition = `width ${duration}ms linear`;
                 this.progressBar.style.width = '100%';
             }
@@ -426,13 +1073,10 @@
             setupClock() {
                 const updateClock = () => {
                     const now = new Date();
-                    
-                    // Time
                     const hours = now.getHours().toString().padStart(2, '0');
                     const minutes = now.getMinutes().toString().padStart(2, '0');
                     document.getElementById('timeDisplay').textContent = `${hours}:${minutes}`;
                     
-                    // Date
                     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
                 };
@@ -442,41 +1086,79 @@
             }
 
             setupAutoRefresh() {
-                // Refresh page every X hours to get latest content
                 const refreshInterval = this.config.autoRefreshHours * 60 * 60 * 1000;
-                setTimeout(() => {
-                    console.log('Auto-refreshing page...');
-                    location.reload();
-                }, refreshInterval);
-                
+                setTimeout(() => location.reload(), refreshInterval);
                 console.log(`Auto-refresh scheduled in ${this.config.autoRefreshHours} hours`);
             }
 
-            setupErrorHandling() {
-                window.addEventListener('error', (event) => {
-                    console.error('Global error:', event.error);
-                    this.showError(`Error: ${event.message}`);
+            setupKeyboardControls() {
+                document.addEventListener('keydown', (e) => {
+                    if (document.getElementById('settingsPanel').classList.contains('open')) return;
+                    
+                    switch(e.key) {
+                        case 'ArrowRight':
+                        case 'n':
+                            this.next();
+                            break;
+                        case 'ArrowLeft':
+                        case 'p':
+                            this.previous();
+                            break;
+                        case ' ':
+                        case 'k':
+                            if (this.isPaused) {
+                                this.resume();
+                            } else {
+                                this.pause();
+                            }
+                            break;
+                    }
                 });
             }
 
-            showError(message) {
-                console.error(message);
-                this.errorMessage.textContent = message;
-                this.errorMessage.classList.add('show');
-                
-                setTimeout(() => {
-                    this.errorMessage.classList.remove('show');
-                }, 5000);
+            setupWakeLock() {
+                if ('wakeLock' in navigator) {
+                    let wakeLock = null;
+                    
+                    const requestWakeLock = async () => {
+                        try {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            console.log('Screen wake lock acquired');
+                        } catch (err) {
+                            console.error('Wake lock error:', err);
+                        }
+                    };
+                    
+                    requestWakeLock();
+                    
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible') {
+                            requestWakeLock();
+                        }
+                    });
+                }
             }
 
-            // Public methods for manual control (accessible via browser console)
+            updateConfig(newConfig) {
+                this.config = newConfig;
+                clearTimeout(this.slideTimeout);
+                this.isTransitioning = false;
+                this.isPaused = false;
+                this.currentSlideIndex = 0;
+                this.createSlides();
+                this.startCarousel();
+            }
+
             pause() {
+                this.isPaused = true;
                 clearTimeout(this.slideTimeout);
                 this.progressBar.style.animationPlayState = 'paused';
                 console.log('Carousel paused');
             }
 
             resume() {
+                this.isPaused = false;
+                this.isTransitioning = false;
                 this.showSlide(this.currentSlideIndex);
                 console.log('Carousel resumed');
             }
@@ -484,6 +1166,7 @@
             next() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
+                this.isPaused = false;
                 const nextIndex = (this.currentSlideIndex + 1) % this.slides.length;
                 this.showSlide(nextIndex);
             }
@@ -491,92 +1174,29 @@
             previous() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
+                this.isPaused = false;
                 const prevIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
                 this.showSlide(prevIndex);
             }
-
-            goto(index) {
-                if (index >= 0 && index < this.slides.length) {
-                    clearTimeout(this.slideTimeout);
-                    this.isTransitioning = false;
-                    this.showSlide(index);
-                }
-            }
         }
 
         // ============================================================
-        // INITIALIZE ON PAGE LOAD
+        // INITIALIZE APPLICATION
         // ============================================================
-        let kiosk;
+        let kiosk, settingsUI;
         
         window.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded, starting kiosk...');
-            kiosk = new TVKiosk(CONFIG);
             
-            // Make kiosk accessible in console for debugging
+            const savedConfig = StorageManager.load();
+            const config = savedConfig || DEFAULT_CONFIG;
+            
+            kiosk = new TVKiosk(config);
+            settingsUI = new SettingsUI(kiosk);
+            
             window.kiosk = kiosk;
-            console.log('Kiosk initialized. Use window.kiosk to control (e.g., kiosk.pause(), kiosk.next())');
-        });
-
-        // Prevent accidental navigation
-        window.addEventListener('beforeunload', (e) => {
-            // Uncomment to warn before closing
-            // e.preventDefault();
-            // e.returnValue = '';
-        });
-
-        // Keep screen awake (request wake lock if supported)
-        if ('wakeLock' in navigator) {
-            let wakeLock = null;
-            
-            const requestWakeLock = async () => {
-                try {
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Screen wake lock acquired');
-                    
-                    wakeLock.addEventListener('release', () => {
-                        console.log('Screen wake lock released');
-                    });
-                } catch (err) {
-                    console.error('Wake lock error:', err);
-                }
-            };
-            
-            requestWakeLock();
-            
-            // Reacquire wake lock when page becomes visible
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    requestWakeLock();
-                }
-            });
-        }
-
-        // Keyboard shortcuts (for maintenance/setup)
-        document.addEventListener('keydown', (e) => {
-            if (!kiosk) return;
-            
-            switch(e.key) {
-                case 'ArrowRight':
-                case 'n':
-                    kiosk.next();
-                    break;
-                case 'ArrowLeft':
-                case 'p':
-                    kiosk.previous();
-                    break;
-                case ' ':
-                case 'k':
-                    if (kiosk.slideTimeout) {
-                        kiosk.pause();
-                    } else {
-                        kiosk.resume();
-                    }
-                    break;
-                case 'r':
-                    location.reload();
-                    break;
-            }
+            console.log('Kiosk initialized. Use window.kiosk for debugging');
+            console.log('Press Settings button (⚙) to configure');
         });
     </script>
 </body>
