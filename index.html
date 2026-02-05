@@ -403,10 +403,11 @@ https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=cro
                 
                 <div class="setting-group" style="border-top: 2px solid #eee; padding-top: 20px; margin-top: 20px;">
                     <button onclick="saveConfiguration()" style="background: #28a745; font-size: 18px; padding: 15px;">
-                        💾 Save All Settings
+                        💾 Save & Generate Shareable Link
                     </button>
                     <small style="color: #666; display: block; margin-top: 10px; text-align: center;">
-                        Saves Power BI URL, Image URLs, and Interval for next time
+                        Creates a special link that includes all your settings.<br>
+                        Share this link with others - they'll see your exact configuration!
                     </small>
                 </div>
             </div>
@@ -532,7 +533,7 @@ https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=cro
             }
         }
 
-        // Save configuration to localStorage
+        // Save configuration to localStorage AND generate shareable URL
         function saveConfiguration() {
             const config = {
                 powerbiUrl: document.getElementById('powerbiUrl').value,
@@ -541,21 +542,183 @@ https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=cro
             };
             
             try {
+                // Save to localStorage for this user
                 localStorage.setItem('dashboardConfig', JSON.stringify(config));
-                alert('✅ Settings saved successfully!\n\nYour configuration will be loaded automatically next time you open this page.');
+                
+                // Generate shareable URL with encoded configuration
+                const configString = btoa(JSON.stringify(config)); // Base64 encode
+                const currentUrl = window.location.href.split('?')[0]; // Remove existing parameters
+                const shareableUrl = `${currentUrl}?config=${encodeURIComponent(configString)}`;
+                
+                // Log to console for easy access
+                console.log('===========================================');
+                console.log('SHAREABLE URL (copy this):');
+                console.log(shareableUrl);
+                console.log('===========================================');
+                
+                // Show success message with shareable URL
+                const message = `✅ Settings saved successfully!\n\n` +
+                    `📋 SHAREABLE LINK (copy this to share with others):\n\n` +
+                    `${shareableUrl}\n\n` +
+                    `When others open this link, they'll see your exact configuration!`;
+                
+                // Create a nice modal instead of alert
+                showShareableUrlModal(shareableUrl);
+                
             } catch (e) {
                 alert('❌ Error saving settings. Please try again.');
                 console.error('Save error:', e);
             }
         }
 
-        // Load configuration from localStorage
+        // Show modal with shareable URL
+        function showShareableUrlModal(url) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="color: #28a745; margin-bottom: 20px;">✅ Settings Saved Successfully!</h2>
+                    
+                    <p style="margin-bottom: 15px; color: #333; font-size: 16px;">
+                        <strong>Share this link with your team:</strong>
+                    </p>
+                    
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #667eea;">
+                        <a href="${url}" target="_blank" style="color: #667eea; word-break: break-all; font-size: 13px; text-decoration: underline;">
+                            ${url}
+                        </a>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                        <button onclick="copyShareableLink('${url.replace(/'/g, "\\'")}');" 
+                            style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+                            📋 Copy Link
+                        </button>
+                        <button onclick="openInNewTab('${url.replace(/'/g, "\\'")}');" 
+                            style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+                            🔗 Test Link
+                        </button>
+                        <button onclick="this.closest('div').parentElement.parentElement.remove();" 
+                            style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+                            Close
+                        </button>
+                    </div>
+                    
+                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+                        <p style="margin: 0; font-size: 14px; color: #333;">
+                            <strong>💡 How to share:</strong><br>
+                            • Click "Copy Link" to copy to clipboard<br>
+                            • Paste in email, Teams, or SharePoint<br>
+                            • Recipients will see your exact configuration!<br>
+                            • No setup needed for them - just click and view
+                        </p>
+                    </div>
+                    
+                    <p style="margin-top: 15px; font-size: 12px; color: #999; text-align: center;">
+                        Note: This link contains all your Power BI URL, image URLs, and interval settings
+                    </p>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Copy shareable link with success feedback
+        function copyShareableLink(url) {
+            copyToClipboard(url);
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #28a745;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                font-size: 16px;
+                z-index: 10001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            successMsg.textContent = '✅ Link copied to clipboard!';
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => successMsg.remove(), 3000);
+        }
+
+        // Open link in new tab for testing
+        function openInNewTab(url) {
+            window.open(url, '_blank');
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // Load configuration from URL parameters or localStorage
         function loadConfiguration() {
             try {
-                const saved = localStorage.getItem('dashboardConfig');
-                if (saved) {
-                    const config = JSON.parse(saved);
-                    
+                // First, check if there's a config in the URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const configParam = urlParams.get('config');
+                
+                let config = null;
+                
+                if (configParam) {
+                    // Decode configuration from URL
+                    try {
+                        const decodedConfig = atob(decodeURIComponent(configParam));
+                        config = JSON.parse(decodedConfig);
+                        console.log('Configuration loaded from URL');
+                        
+                        // Also save to localStorage for this user
+                        localStorage.setItem('dashboardConfig', JSON.stringify(config));
+                    } catch (e) {
+                        console.error('Error parsing URL config:', e);
+                    }
+                }
+                
+                // If no URL config, try localStorage
+                if (!config) {
+                    const saved = localStorage.getItem('dashboardConfig');
+                    if (saved) {
+                        config = JSON.parse(saved);
+                        console.log('Configuration loaded from localStorage');
+                    }
+                }
+                
+                // Apply configuration if found
+                if (config) {
                     // Load Power BI URL
                     if (config.powerbiUrl) {
                         document.getElementById('powerbiUrl').value = config.powerbiUrl;
@@ -576,8 +739,6 @@ https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=cro
                         document.getElementById('intervalSeconds').value = config.intervalSeconds;
                         carouselInterval = parseInt(config.intervalSeconds) * 1000;
                     }
-                    
-                    console.log('Configuration loaded successfully');
                 }
             } catch (e) {
                 console.error('Load error:', e);
