@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Carousel & Power BI Dashboard</title>
+    <title>Office TV Kiosk</title>
     <style>
         * {
             margin: 0;
@@ -13,236 +13,20 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 0;
-            margin: 0;
+            background: #000;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            cursor: none; /* Hide cursor for kiosk mode */
         }
 
-        .container {
-            max-width: 1600px;
-            width: 90%;
-            height: 95vh;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        /* Settings Panel */
-        .settings-panel {
-            position: fixed;
-            top: 0;
-            right: -450px;
-            width: 450px;
+        .kiosk-container {
+            width: 100vw;
             height: 100vh;
-            background: white;
-            box-shadow: -5px 0 20px rgba(0,0,0,0.3);
-            transition: right 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .settings-panel.open {
-            right: 0;
-        }
-
-        .settings-header {
-            background: #667eea;
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .settings-header h3 {
-            margin: 0;
-            font-size: 1.5em;
-        }
-
-        .close-btn {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-btn:hover {
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-        }
-
-        .settings-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .setting-group {
-            margin-bottom: 30px;
-        }
-
-        .setting-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .setting-group input,
-        .setting-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-
-        .setting-group input[type="file"] {
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .setting-group input:focus,
-        .setting-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .setting-group button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            transition: all 0.3s;
-        }
-
-        .setting-group button:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .settings-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            z-index: 999;
-            transition: all 0.3s;
-        }
-
-        .settings-toggle:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-
-        .fullscreen-toggle {
-            position: fixed;
-            top: 20px;
-            right: 100px;
-            background: white;
-            border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            z-index: 999;
-            transition: all 0.3s;
-        }
-
-        .fullscreen-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            background: #667eea;
-            color: white;
-        }
-
-        /* Hide buttons in fullscreen mode */
-        body.fullscreen-mode .settings-toggle,
-        body.fullscreen-mode .fullscreen-toggle {
-            display: none;
-        }
-
-        /* Fullscreen mode adjustments */
-        body.fullscreen-mode {
-            padding: 0;
-        }
-
-        body.fullscreen-mode .container {
-            width: 100%;
-            max-width: 100%;
-            height: 100vh;
-        }
-
-        body.fullscreen-mode .content-wrapper {
-            gap: 0;
-        }
-
-        body.fullscreen-mode .powerbi-section,
-        body.fullscreen-mode .carousel-section {
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-        .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            height: 100%;
-            padding: 0;
-        }
-
-        /* Image Carousel Section */
-        .carousel-section {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .carousel-container {
             position: relative;
-            width: 100%;
-            flex: 1;
             overflow: hidden;
-            border-radius: 10px;
-            background: #f0f0f0;
-            min-height: 150px;
         }
 
-        .carousel-slide {
+        /* Slide styling */
+        .slide {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -251,719 +35,548 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            background: #000;
         }
 
-        .carousel-slide.active {
+        .slide.active {
             opacity: 1;
+            z-index: 1;
         }
 
-        .carousel-slide img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        /* Image slide styling */
+        .slide.image-slide {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
-        .carousel-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
-            flex-shrink: 0;
+        .slide.image-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent 20%, transparent 80%, rgba(0,0,0,0.3));
         }
 
-        .indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ddd;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .indicator.active {
-            background: #667eea;
-            transform: scale(1.3);
-        }
-
-        /* Power BI Section */
-        .powerbi-section {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            flex: 2.5;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .powerbi-container {
-            width: 100%;
-            flex: 1;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 0;
-        }
-
-        .powerbi-container iframe {
+        /* Power BI slide styling */
+        .slide.powerbi-slide iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: #fff;
         }
 
-        .powerbi-placeholder {
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, #0078d4, #50e6ff);
+            width: 0%;
+            transition: width linear;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0, 120, 212, 0.5);
+        }
+
+        /* Slide counter */
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Date and Time display */
+        .datetime-display {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .datetime-display .time {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .datetime-display .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Welcome message (optional) */
+        .welcome-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
-            color: #666;
-            padding: 40px;
+            color: #fff;
+            z-index: 100;
+            opacity: 0;
+            animation: fadeInOut 8s ease-in-out;
+            pointer-events: none;
         }
 
-        .powerbi-placeholder p {
-            margin: 10px 0;
-            line-height: 1.6;
+        .welcome-overlay h1 {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
-        .powerbi-placeholder code {
-            background: #f5f5f5;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
+        .welcome-overlay p {
+            font-size: 24px;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+
+        /* Error message */
+        .error-message {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(232, 17, 35, 0.9);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: none;
             font-size: 14px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .content-wrapper {
-                height: auto;
-                min-height: calc(100vh - 40px);
+        .error-message.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 100px);
+                opacity: 0;
             }
-            
-            .powerbi-section {
-                min-height: 500px;
-            }
-            
-            .carousel-section {
-                min-height: 250px;
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
             }
         }
 
-        @media (max-width: 768px) {
-            .powerbi-section {
-                min-height: 400px;
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .datetime-display .time {
+                font-size: 24px;
             }
-
-            .carousel-section {
-                min-height: 200px;
+            .welcome-overlay h1 {
+                font-size: 48px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Settings Panel -->
-        <div class="settings-panel" id="settingsPanel">
-            <div class="settings-header">
-                <h3>⚙️ Settings</h3>
-                <button onclick="toggleSettings()" class="close-btn">✕</button>
-            </div>
-            <div class="settings-content">
-                <div class="setting-group">
-                    <label>Power BI Embed URL:</label>
-                    <input type="text" id="powerbiUrl" placeholder="Enter Power BI embed URL" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52">
-                    <button onclick="updatePowerBI()">Update Dashboard</button>
-                </div>
-                <div class="setting-group">
-                    <label>Image URLs (one per line):</label>
-                    <small style="color: #666; display: block; margin-bottom: 8px;">
-                        💡 Upload images to SharePoint, then paste their URLs here (4 images recommended)
-                    </small>
-                    <small style="color: #667eea; display: block; margin-bottom: 8px; font-weight: bold;">
-                        📋 How to get SharePoint image URLs:<br>
-                        1. Upload images to SharePoint document library<br>
-                        2. Click "..." on image → Share → Copy link<br>
-                        3. Paste the sharing links below (one per line)<br>
-                        <br>
-                        ✅ Sharing URLs work! Example:<br>
-                        <span style="font-size: 11px;">https://yourcompany.sharepoint.com/:i:/s/site/...</span>
-                    </small>
-                    <textarea id="imageUrls" rows="8" placeholder="Paste SharePoint sharing links here, one per line">https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop
-https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop
-https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop
-https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop</textarea>
-                    <button onclick="updateImages()">Update Images</button>
-                </div>
-                <div class="setting-group">
-                    <label>Image Interval (seconds):</label>
-                    <input type="number" id="intervalSeconds" min="1" max="60" value="3" placeholder="Seconds between images">
-                    <button onclick="updateInterval()">Update Interval</button>
-                </div>
-                
-                <div class="setting-group" style="border-top: 2px solid #eee; padding-top: 20px; margin-top: 20px;">
-                    <button onclick="saveConfiguration()" style="background: #28a745; font-size: 18px; padding: 15px;">
-                        💾 Save & Generate Shareable Link
-                    </button>
-                    <small style="color: #666; display: block; margin-top: 10px; text-align: center;">
-                        Creates a special link that includes all your settings.<br>
-                        Share this link with others - they'll see your exact configuration!
-                    </small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Toggle Button -->
-        <button class="settings-toggle" onclick="toggleSettings()">⚙️</button>
-        
-        <!-- Fullscreen Toggle Button -->
-        <button class="fullscreen-toggle" onclick="toggleFullscreen()">⛶</button>
-
-        <div class="content-wrapper">
-            <!-- Power BI Section -->
-            <div class="powerbi-section">
-                <div class="powerbi-container" id="powerbiContainer">
-                    <div class="powerbi-placeholder">
-                        <h3>📊 Power BI Integration</h3>
-                        <p>Loading Power BI dashboard...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Image Carousel Section -->
-            <div class="carousel-section">
-                <div class="carousel-container">
-                    <div class="carousel-slide active">
-                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop" alt="Business Team">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop" alt="Data Analytics">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop" alt="Charts and Graphs">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop" alt="Office Work">
-                    </div>
-                </div>
-                
-                <div class="carousel-indicators" id="indicators"></div>
-            </div>
-        </div>
+    <div class="kiosk-container" id="kioskContainer">
+        <!-- Slides will be dynamically inserted here -->
     </div>
 
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter">1 / 1</div>
+
+    <!-- Date and Time -->
+    <div class="datetime-display">
+        <div class="time" id="timeDisplay">00:00</div>
+        <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-message" id="errorMessage"></div>
+
     <script>
-        // Global interval setting (in milliseconds)
-        let carouselInterval = 3000; // Default 3 seconds
+        // ============================================================
+        // CONFIGURATION - Edit this section
+        // ============================================================
+        const CONFIG = {
+            // Slide duration in milliseconds (default: 15 seconds)
+            slideDuration: 15000,
+            
+            // Power BI reports duration (longer for dashboards)
+            powerBiDuration: 30000,
+            
+            // Auto-refresh interval (reload page every X hours to get fresh data)
+            autoRefreshHours: 24,
+            
+            // Slides configuration
+            slides: [
+                // Image slides - use SharePoint image URLs
+                {
+                    type: 'image',
+                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image1.jpg',
+                    duration: 15000
+                },
+                {
+                    type: 'image',
+                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image2.jpg',
+                    duration: 15000
+                },
+                
+                // Power BI report slides
+                {
+                    type: 'powerbi',
+                    embedUrl: 'https://app.powerbi.com/view?r=YOUR_REPORT_ID',
+                    duration: 30000
+                },
+                
+                {
+                    type: 'image',
+                    url: 'https://yourtenant.sharepoint.com/sites/yoursite/SiteAssets/kiosk/image3.jpg',
+                    duration: 15000
+                },
+                
+                {
+                    type: 'powerbi',
+                    embedUrl: 'https://app.powerbi.com/view?r=ANOTHER_REPORT_ID',
+                    duration: 30000
+                }
+            ]
+        };
 
-        // Settings panel toggle
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            panel.classList.toggle('open');
-        }
+        // ============================================================
+        // KIOSK APPLICATION
+        // ============================================================
+        class TVKiosk {
+            constructor(config) {
+                this.config = config;
+                this.currentSlideIndex = 0;
+                this.slides = [];
+                this.progressInterval = null;
+                this.slideTimeout = null;
+                this.isTransitioning = false;
+                
+                this.container = document.getElementById('kioskContainer');
+                this.progressBar = document.getElementById('progressBar');
+                this.slideCounter = document.getElementById('slideCounter');
+                this.loading = document.getElementById('loading');
+                this.errorMessage = document.getElementById('errorMessage');
+                
+                this.init();
+            }
 
-        // Fullscreen toggle
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                // Enter fullscreen
-                document.documentElement.requestFullscreen().then(() => {
-                    document.body.classList.add('fullscreen-mode');
-                }).catch(err => {
-                    alert(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                // Exit fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().then(() => {
-                        document.body.classList.remove('fullscreen-mode');
+            init() {
+                console.log('Initializing TV Kiosk...');
+                this.createSlides();
+                this.setupClock();
+                this.startCarousel();
+                this.setupAutoRefresh();
+                this.setupErrorHandling();
+            }
+
+            createSlides() {
+                this.container.innerHTML = ''; // Clear existing slides
+                
+                this.config.slides.forEach((slideConfig, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'slide';
+                    slide.dataset.index = index;
+                    
+                    if (slideConfig.type === 'image') {
+                        slide.classList.add('image-slide');
+                        slide.style.backgroundImage = `url('${slideConfig.url}')`;
+                        
+                        // Preload image
+                        const img = new Image();
+                        img.src = slideConfig.url;
+                        img.onerror = () => this.showError(`Failed to load image: ${slideConfig.url}`);
+                        
+                    } else if (slideConfig.type === 'powerbi') {
+                        slide.classList.add('powerbi-slide');
+                        const iframe = document.createElement('iframe');
+                        iframe.src = slideConfig.embedUrl;
+                        iframe.allowFullscreen = true;
+                        slide.appendChild(iframe);
+                    }
+                    
+                    this.container.appendChild(slide);
+                    this.slides.push({
+                        element: slide,
+                        config: slideConfig
                     });
-                }
-            }
-        }
-
-        // Listen for fullscreen change events
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                document.body.classList.remove('fullscreen-mode');
-            }
-        });
-
-        // ESC key exits fullscreen - update class
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.fullscreenElement) {
-                document.body.classList.remove('fullscreen-mode');
-            }
-        });
-
-        // Update Power BI dashboard
-        function updatePowerBI() {
-            const url = document.getElementById('powerbiUrl').value.trim();
-            if (url) {
-                loadPowerBI(url);
-                alert('Power BI dashboard updated!');
-            } else {
-                alert('Please enter a valid Power BI URL');
-            }
-        }
-
-        // Update carousel images
-        function updateImages() {
-            const urls = document.getElementById('imageUrls').value.trim().split('\n').filter(url => url.trim() && !url.startsWith('#'));
-            if (urls.length > 0) {
-                loadCarouselImages(urls);
-                alert(`Images updated! ${urls.length} image(s) loaded.`);
-            } else {
-                alert('Please enter at least one image URL');
-            }
-        }
-
-        // Update carousel interval
-        function updateInterval() {
-            const seconds = parseInt(document.getElementById('intervalSeconds').value);
-            if (seconds && seconds > 0 && seconds <= 60) {
-                carouselInterval = seconds * 1000;
-                // Restart autoplay with new interval
-                if (window.autoPlayInterval) {
-                    clearInterval(window.autoPlayInterval);
-                }
-                startAutoPlay();
-                alert(`Interval updated to ${seconds} seconds!`);
-            } else {
-                alert('Please enter a valid interval between 1 and 60 seconds');
-            }
-        }
-
-        // Save configuration to localStorage AND generate shareable URL
-        function saveConfiguration() {
-            const config = {
-                powerbiUrl: document.getElementById('powerbiUrl').value,
-                imageUrls: document.getElementById('imageUrls').value,
-                intervalSeconds: document.getElementById('intervalSeconds').value
-            };
-            
-            try {
-                // Save to localStorage for this user
-                localStorage.setItem('dashboardConfig', JSON.stringify(config));
+                });
                 
-                // Generate shareable URL with encoded configuration
-                const configString = btoa(JSON.stringify(config)); // Base64 encode
-                const currentUrl = window.location.href.split('?')[0]; // Remove existing parameters
-                const shareableUrl = `${currentUrl}?config=${encodeURIComponent(configString)}`;
-                
-                // Log to console for easy access
-                console.log('===========================================');
-                console.log('SHAREABLE URL (copy this):');
-                console.log(shareableUrl);
-                console.log('===========================================');
-                
-                // Show success message with shareable URL
-                const message = `✅ Settings saved successfully!\n\n` +
-                    `📋 SHAREABLE LINK (copy this to share with others):\n\n` +
-                    `${shareableUrl}\n\n` +
-                    `When others open this link, they'll see your exact configuration!`;
-                
-                // Create a nice modal instead of alert
-                showShareableUrlModal(shareableUrl);
-                
-            } catch (e) {
-                alert('❌ Error saving settings. Please try again.');
-                console.error('Save error:', e);
-            }
-        }
-
-        // Show modal with shareable URL
-        function showShareableUrlModal(url) {
-            // Create modal
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.7);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                    <h2 style="color: #28a745; margin-bottom: 20px;">✅ Settings Saved Successfully!</h2>
-                    
-                    <p style="margin-bottom: 15px; color: #333; font-size: 16px;">
-                        <strong>Share this link with your team:</strong>
-                    </p>
-                    
-                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #667eea;">
-                        <a href="${url}" target="_blank" style="color: #667eea; word-break: break-all; font-size: 13px; text-decoration: underline;">
-                            ${url}
-                        </a>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                        <button onclick="copyShareableLink('${url.replace(/'/g, "\\'")}');" 
-                            style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
-                            📋 Copy Link
-                        </button>
-                        <button onclick="openInNewTab('${url.replace(/'/g, "\\'")}');" 
-                            style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
-                            🔗 Test Link
-                        </button>
-                        <button onclick="this.closest('div').parentElement.parentElement.remove();" 
-                            style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
-                            Close
-                        </button>
-                    </div>
-                    
-                    <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
-                        <p style="margin: 0; font-size: 14px; color: #333;">
-                            <strong>💡 How to share:</strong><br>
-                            • Click "Copy Link" to copy to clipboard<br>
-                            • Paste in email, Teams, or SharePoint<br>
-                            • Recipients will see your exact configuration!<br>
-                            • No setup needed for them - just click and view
-                        </p>
-                    </div>
-                    
-                    <p style="margin-top: 15px; font-size: 12px; color: #999; text-align: center;">
-                        Note: This link contains all your Power BI URL, image URLs, and interval settings
-                    </p>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // Close on background click
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.remove();
-                }
-            });
-        }
-
-        // Copy shareable link with success feedback
-        function copyShareableLink(url) {
-            copyToClipboard(url);
-            
-            // Show success message
-            const successMsg = document.createElement('div');
-            successMsg.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #28a745;
-                color: white;
-                padding: 15px 30px;
-                border-radius: 8px;
-                font-size: 16px;
-                z-index: 10001;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
-            successMsg.textContent = '✅ Link copied to clipboard!';
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => successMsg.remove(), 3000);
-        }
-
-        // Open link in new tab for testing
-        function openInNewTab(url) {
-            window.open(url, '_blank');
-        }
-
-        // Copy to clipboard function
-        function copyToClipboard(text) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-        }
-
-        // Load configuration from URL parameters or localStorage
-        function loadConfiguration() {
-            try {
-                // First, check if there's a config in the URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const configParam = urlParams.get('config');
-                
-                let config = null;
-                
-                if (configParam) {
-                    // Decode configuration from URL
-                    try {
-                        const decodedConfig = atob(decodeURIComponent(configParam));
-                        config = JSON.parse(decodedConfig);
-                        console.log('Configuration loaded from URL');
-                        
-                        // Also save to localStorage for this user
-                        localStorage.setItem('dashboardConfig', JSON.stringify(config));
-                    } catch (e) {
-                        console.error('Error parsing URL config:', e);
-                    }
+                // Show first slide
+                if (this.slides.length > 0) {
+                    this.slides[0].element.classList.add('active');
+                    this.updateCounter();
                 }
                 
-                // If no URL config, try localStorage
-                if (!config) {
-                    const saved = localStorage.getItem('dashboardConfig');
-                    if (saved) {
-                        config = JSON.parse(saved);
-                        console.log('Configuration loaded from localStorage');
-                    }
-                }
-                
-                // Apply configuration if found
-                if (config) {
-                    // Load Power BI URL
-                    if (config.powerbiUrl) {
-                        document.getElementById('powerbiUrl').value = config.powerbiUrl;
-                        loadPowerBI(config.powerbiUrl);
-                    }
-                    
-                    // Load Image URLs
-                    if (config.imageUrls) {
-                        document.getElementById('imageUrls').value = config.imageUrls;
-                        const urls = config.imageUrls.trim().split('\n').filter(url => url.trim() && !url.startsWith('#'));
-                        if (urls.length > 0) {
-                            loadCarouselImages(urls);
-                        }
-                    }
-                    
-                    // Load Interval
-                    if (config.intervalSeconds) {
-                        document.getElementById('intervalSeconds').value = config.intervalSeconds;
-                        carouselInterval = parseInt(config.intervalSeconds) * 1000;
-                    }
-                }
-            } catch (e) {
-                console.error('Load error:', e);
+                console.log(`Created ${this.slides.length} slides`);
             }
-        }
 
-        // Load saved configuration on page load
-        window.addEventListener('load', function() {
-            loadConfiguration();
-        });
-
-        // Load Power BI iframe
-        function loadPowerBI(url) {
-            const container = document.getElementById('powerbiContainer');
-            container.innerHTML = '';
-            
-            const iframe = document.createElement('iframe');
-            iframe.src = url;
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.border = 'none';
-            iframe.setAttribute('allowFullScreen', 'true');
-            iframe.title = 'Power BI Dashboard';
-            
-            container.appendChild(iframe);
-        }
-
-        // Load carousel images
-        function loadCarouselImages(urls) {
-            const container = document.querySelector('.carousel-container');
-            container.innerHTML = '';
-            
-            urls.forEach((url, index) => {
-                const slide = document.createElement('div');
-                slide.className = 'carousel-slide' + (index === 0 ? ' active' : '');
-                const img = document.createElement('img');
-                
-                let imageUrl = url.trim();
-                
-                // Handle SharePoint sharing URLs - convert to direct download/embed
-                if (imageUrl.includes('sharepoint.com')) {
-                    // Different types of SharePoint URLs
-                    
-                    // Type 1: /:u:/ or /:i:/ sharing links (most common)
-                    if (imageUrl.includes('/:u:/') || imageUrl.includes('/:i:/')) {
-                        // Extract the base URL and add embed/download parameter
-                        const baseUrl = imageUrl.split('?')[0];
-                        imageUrl = baseUrl + '?download=1';
-                    }
-                    // Type 2: Direct file path
-                    else if (imageUrl.includes('/Shared%20Documents/') || imageUrl.includes('/Documents/')) {
-                        // Already a direct path, just ensure it's accessible
-                        if (!imageUrl.includes('?')) {
-                            imageUrl = imageUrl + '?web=1';
-                        }
-                    }
-                    // Type 3: Any other SharePoint URL
-                    else if (imageUrl.includes('?')) {
-                        // Has parameters, try adding download
-                        if (!imageUrl.includes('download=')) {
-                            imageUrl = imageUrl + '&download=1';
-                        }
-                    }
+            startCarousel() {
+                if (this.slides.length === 0) {
+                    this.showError('No slides configured');
+                    return;
                 }
+
+                this.showSlide(0);
+            }
+
+            showSlide(index) {
+                if (this.isTransitioning) return;
                 
-                // Handle regular OneDrive links
-                else if (imageUrl.includes('onedrive.live.com') || imageUrl.includes('1drv.ms')) {
-                    if (imageUrl.includes('?')) {
-                        imageUrl = imageUrl.split('?')[0];
-                    }
-                    imageUrl = imageUrl.replace('/view', '/embed') + '?download=1';
-                }
+                this.isTransitioning = true;
+                this.currentSlideIndex = index;
                 
-                img.src = imageUrl;
-                img.alt = `Slide ${index + 1}`;
+                // Hide all slides
+                this.slides.forEach(slide => {
+                    slide.element.classList.remove('active');
+                });
                 
-                // Add crossOrigin attribute for SharePoint images
-                img.crossOrigin = 'anonymous';
+                // Show current slide
+                this.slides[index].element.classList.add('active');
+                this.updateCounter();
                 
-                img.onerror = function() {
-                    // If image fails to load, try alternative method
-                    console.error('Failed to load image:', imageUrl);
+                // Reset and start progress bar
+                const duration = this.slides[index].config.duration || this.config.slideDuration;
+                this.animateProgressBar(duration);
+                
+                // Schedule next slide
+                clearTimeout(this.slideTimeout);
+                this.slideTimeout = setTimeout(() => {
+                    this.isTransitioning = false;
+                    const nextIndex = (index + 1) % this.slides.length;
+                    this.showSlide(nextIndex);
+                }, duration);
+            }
+
+            animateProgressBar(duration) {
+                // Reset progress bar
+                this.progressBar.style.transition = 'none';
+                this.progressBar.style.width = '0%';
+                
+                // Force reflow
+                this.progressBar.offsetHeight;
+                
+                // Animate
+                this.progressBar.style.transition = `width ${duration}ms linear`;
+                this.progressBar.style.width = '100%';
+            }
+
+            updateCounter() {
+                const current = this.currentSlideIndex + 1;
+                const total = this.slides.length;
+                this.slideCounter.textContent = `${current} / ${total}`;
+            }
+
+            setupClock() {
+                const updateClock = () => {
+                    const now = new Date();
                     
-                    // Try removing download parameter and use embed instead
-                    if (imageUrl.includes('download=1')) {
-                        const altUrl = imageUrl.replace('download=1', 'action=embedview');
-                        console.log('Trying alternative URL:', altUrl);
-                        
-                        const altImg = document.createElement('img');
-                        altImg.src = altUrl;
-                        altImg.alt = img.alt;
-                        altImg.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
-                        
-                        altImg.onerror = function() {
-                            // If still fails, show error message
-                            this.style.display = 'none';
-                            const errorDiv = document.createElement('div');
-                            errorDiv.style.cssText = 'color: #666; padding: 20px; text-align: center;';
-                            errorDiv.innerHTML = `
-                                ⚠️ Failed to load image<br>
-                                <small style="font-size: 12px;">URL: ${imageUrl.substring(0, 50)}...</small><br>
-                                <small style="font-size: 12px;">Try using direct file path or check permissions</small>
-                            `;
-                            slide.appendChild(errorDiv);
-                        };
-                        
-                        // Replace the failed image
-                        this.replaceWith(altImg);
-                    } else {
-                        // Show error message
-                        this.style.display = 'none';
-                        const errorDiv = document.createElement('div');
-                        errorDiv.style.cssText = 'color: #666; padding: 20px; text-align: center;';
-                        errorDiv.innerHTML = `
-                            ⚠️ Failed to load image<br>
-                            <small style="font-size: 12px;">Check if URL is accessible</small>
-                        `;
-                        slide.appendChild(errorDiv);
-                    }
+                    // Time
+                    const hours = now.getHours().toString().padStart(2, '0');
+                    const minutes = now.getMinutes().toString().padStart(2, '0');
+                    document.getElementById('timeDisplay').textContent = `${hours}:${minutes}`;
+                    
+                    // Date
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
                 };
                 
-                slide.appendChild(img);
-                container.appendChild(slide);
-            });
-            
-            // Reinitialize carousel
-            initializeCarousel();
-        }
-
-        // Initialize carousel
-        function initializeCarousel() {
-            // Clear existing indicators
-            const indicatorsContainer = document.getElementById('indicators');
-            indicatorsContainer.innerHTML = '';
-            
-            // Get all slides
-            window.slides = document.querySelectorAll('.carousel-slide');
-            window.totalSlides = slides.length;
-            window.currentSlide = 0;
-            
-            // Create indicators
-            for (let i = 0; i < totalSlides; i++) {
-                const indicator = document.createElement('div');
-                indicator.className = 'indicator' + (i === 0 ? ' active' : '');
-                indicator.onclick = () => goToSlide(i);
-                indicatorsContainer.appendChild(indicator);
+                updateClock();
+                setInterval(updateClock, 1000);
             }
-            
-            // Restart autoplay
-            if (window.autoPlayInterval) {
-                clearInterval(window.autoPlayInterval);
+
+            setupAutoRefresh() {
+                // Refresh page every X hours to get latest content
+                const refreshInterval = this.config.autoRefreshHours * 60 * 60 * 1000;
+                setTimeout(() => {
+                    console.log('Auto-refreshing page...');
+                    location.reload();
+                }, refreshInterval);
+                
+                console.log(`Auto-refresh scheduled in ${this.config.autoRefreshHours} hours`);
             }
-            startAutoPlay();
-        }
 
-        // Carousel functionality
-        // Initialize window variables for global access
-        window.currentSlide = 0;
-        window.autoPlayInterval = null;
-        window.slides = document.querySelectorAll('.carousel-slide');
-        window.totalSlides = window.slides.length;
-
-        // Initialize indicators on page load
-        (function initializeInitialCarousel() {
-            const indicatorsContainer = document.getElementById('indicators');
-            for (let i = 0; i < window.totalSlides; i++) {
-                const indicator = document.createElement('div');
-                indicator.className = 'indicator' + (i === 0 ? ' active' : '');
-                indicator.onclick = () => goToSlide(i);
-                indicatorsContainer.appendChild(indicator);
+            setupErrorHandling() {
+                window.addEventListener('error', (event) => {
+                    console.error('Global error:', event.error);
+                    this.showError(`Error: ${event.message}`);
+                });
             }
-        })();
 
-        function showSlide(n) {
-            // Use window.slides to get the current slides
-            const currentSlides = window.slides || document.querySelectorAll('.carousel-slide');
-            const currentTotalSlides = window.totalSlides || currentSlides.length;
-            
-            currentSlides.forEach(slide => slide.classList.remove('active'));
-            document.querySelectorAll('.indicator').forEach(ind => ind.classList.remove('active'));
-            
-            window.currentSlide = (n + currentTotalSlides) % currentTotalSlides;
-            currentSlides[window.currentSlide].classList.add('active');
-            
-            const indicators = document.querySelectorAll('.indicator');
-            if (indicators[window.currentSlide]) {
-                indicators[window.currentSlide].classList.add('active');
+            showError(message) {
+                console.error(message);
+                this.errorMessage.textContent = message;
+                this.errorMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    this.errorMessage.classList.remove('show');
+                }, 5000);
             }
-        }
 
-        function nextSlide() {
-            showSlide((window.currentSlide || 0) + 1);
-        }
+            // Public methods for manual control (accessible via browser console)
+            pause() {
+                clearTimeout(this.slideTimeout);
+                this.progressBar.style.animationPlayState = 'paused';
+                console.log('Carousel paused');
+            }
 
-        function previousSlide() {
-            showSlide((window.currentSlide || 0) - 1);
-        }
+            resume() {
+                this.showSlide(this.currentSlideIndex);
+                console.log('Carousel resumed');
+            }
 
-        function goToSlide(n) {
-            showSlide(n);
-        }
+            next() {
+                clearTimeout(this.slideTimeout);
+                this.isTransitioning = false;
+                const nextIndex = (this.currentSlideIndex + 1) % this.slides.length;
+                this.showSlide(nextIndex);
+            }
 
-        function startAutoPlay() {
-            window.autoPlayInterval = setInterval(() => {
-                nextSlide();
-            }, carouselInterval); // Use global interval setting
-        }
+            previous() {
+                clearTimeout(this.slideTimeout);
+                this.isTransitioning = false;
+                const prevIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
+                this.showSlide(prevIndex);
+            }
 
-        // Start auto-play on load
-        startAutoPlay();
-
-        // Power BI Integration - will be loaded by loadConfiguration() if saved
-        // Otherwise load the default
-        window.addEventListener('load', function() {
-            // Small delay to let loadConfiguration run first
-            setTimeout(function() {
-                const powerbiContainer = document.getElementById('powerbiContainer');
-                // Only load default if nothing is loaded yet
-                if (powerbiContainer && powerbiContainer.innerHTML.trim() === '') {
-                    const initialPowerBIUrl = document.getElementById('powerbiUrl').value;
-                    if (initialPowerBIUrl) {
-                        loadPowerBI(initialPowerBIUrl);
-                    }
+            goto(index) {
+                if (index >= 0 && index < this.slides.length) {
+                    clearTimeout(this.slideTimeout);
+                    this.isTransitioning = false;
+                    this.showSlide(index);
                 }
-            }, 100);
+            }
+        }
+
+        // ============================================================
+        // INITIALIZE ON PAGE LOAD
+        // ============================================================
+        let kiosk;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, starting kiosk...');
+            kiosk = new TVKiosk(CONFIG);
+            
+            // Make kiosk accessible in console for debugging
+            window.kiosk = kiosk;
+            console.log('Kiosk initialized. Use window.kiosk to control (e.g., kiosk.pause(), kiosk.next())');
+        });
+
+        // Prevent accidental navigation
+        window.addEventListener('beforeunload', (e) => {
+            // Uncomment to warn before closing
+            // e.preventDefault();
+            // e.returnValue = '';
+        });
+
+        // Keep screen awake (request wake lock if supported)
+        if ('wakeLock' in navigator) {
+            let wakeLock = null;
+            
+            const requestWakeLock = async () => {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Screen wake lock acquired');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Screen wake lock released');
+                    });
+                } catch (err) {
+                    console.error('Wake lock error:', err);
+                }
+            };
+            
+            requestWakeLock();
+            
+            // Reacquire wake lock when page becomes visible
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    requestWakeLock();
+                }
+            });
+        }
+
+        // Keyboard shortcuts (for maintenance/setup)
+        document.addEventListener('keydown', (e) => {
+            if (!kiosk) return;
+            
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'n':
+                    kiosk.next();
+                    break;
+                case 'ArrowLeft':
+                case 'p':
+                    kiosk.previous();
+                    break;
+                case ' ':
+                case 'k':
+                    if (kiosk.slideTimeout) {
+                        kiosk.pause();
+                    } else {
+                        kiosk.resume();
+                    }
+                    break;
+                case 'r':
+                    location.reload();
+                    break;
+            }
         });
     </script>
 </body>
