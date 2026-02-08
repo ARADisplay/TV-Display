@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power BI Dashboard Kiosk</title>
@@ -448,14 +446,14 @@
     <div class="slide-counter" id="slideCounter">1 / 1</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">00:00</div>
-        <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
+        <div class="time" id="timeDisplay">09:02</div>
+        <div class="date" id="dateDisplay">Sunday, February 8, 2026</div>
     </div>
 
     <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
-    <div class="settings-overlay" id="settingsOverlay"></div>
+    <div class="settings-overlay active" id="settingsOverlay"></div>
 
-    <div class="settings-panel" id="settingsPanel">
+    <div class="settings-panel open" id="settingsPanel">
         <div class="settings-header">
             <h2>Kiosk Configuration</h2>
             <button class="close-settings" id="closeSettings">×</button>
@@ -486,16 +484,67 @@
                     1. Open report in Power BI Service<br>
                     2. File → Embed report → Website or portal<br>
                     3. Copy the embed URL<br>
-                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY</code>
+                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&amp;groupId=YYY</code>
                 </div>
 
-                <div class="slides-list" id="slidesList"></div>
+                <div class="slides-list" id="slidesList"><div class="slide-item" data-index="0">
+                        <div class="slide-item-header">
+                            <h4>Report 1: Production</h4>
+                            <button class="remove-slide" data-index="0">Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Name</label>
+                            <input type="text" class="report-name" value="Production" placeholder="e.g., Sales Dashboard">
+                        </div>
+                        <div class="form-group">
+                            <label>Power BI Embed URL</label>
+                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" class="report-duration" value="30" min="10" max="600">
+                        </div>
+                    </div><div class="slide-item" data-index="1">
+                        <div class="slide-item-header">
+                            <h4>Report 2: Drilling Sequence</h4>
+                            <button class="remove-slide" data-index="1">Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Name</label>
+                            <input type="text" class="report-name" value="Drilling Sequence" placeholder="e.g., Sales Dashboard">
+                        </div>
+                        <div class="form-group">
+                            <label>Power BI Embed URL</label>
+                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" class="report-duration" value="30" min="10" max="600">
+                        </div>
+                    </div><div class="slide-item" data-index="2">
+                        <div class="slide-item-header">
+                            <h4>Report 3: Unnamed</h4>
+                            <button class="remove-slide" data-index="2">Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Name</label>
+                            <input type="text" class="report-name" value="" placeholder="e.g., Sales Dashboard">
+                        </div>
+                        <div class="form-group">
+                            <label>Power BI Embed URL</label>
+                            <input type="text" class="report-url" value="" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" class="report-duration" value="30" min="10" max="600">
+                        </div>
+                    </div></div>
 
                 <button class="btn btn-primary" id="addReport">+ Add Power BI Report</button>
             </div>
 
             <div class="settings-section">
-                <h3>Save & Share</h3>
+                <h3>Save &amp; Share</h3>
                 
                 <div class="warning-box">
                     <strong>⚠️ Important:</strong> To save your configuration permanently and share with others, you need to download the updated HTML file below.
@@ -511,7 +560,7 @@
                 <div style="margin-top: 20px;">
                     <div class="form-group">
                         <label>Preview Generated HTML (for advanced users)</label>
-                        <textarea class="html-output" id="htmlOutput" readonly></textarea>
+                        <textarea class="html-output" id="htmlOutput" readonly=""></textarea>
                         <small>This is the complete HTML file with your reports embedded</small>
                     </div>
                 </div>
@@ -526,18 +575,26 @@
         // EMBEDDED CONFIGURATION - EDIT THESE VALUES
         // ============================================================
         const EMBEDDED_CONFIG = {
-            reportDuration: 30000,
-            autoRefreshHours: 24,
-            reports: [
-                // Add your Power BI reports here
-                // Example:
-                // {
-                //     name: "Sales Dashboard",
-                //     embedUrl: "https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY",
-                //     duration: 45000
-                // },
-            ]
-        };
+          "reportDuration": 30000,
+          "autoRefreshHours": 0,
+          "reports": [
+                    {
+                              "name": "Production",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52",
+                              "duration": 30000
+                    },
+                    {
+                              "name": "Drilling Sequence",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52",
+                              "duration": 30000
+                    },
+                    {
+                              "name": "FRASW Timeline",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52",
+                              "duration": 30000
+                    }
+          ]
+};
 
         // ============================================================
         // APPLICATION CODE
@@ -885,5 +942,6 @@
             window.kiosk = kiosk;
         });
     </script>
-</body>
-</html>
+
+
+</body></html>
