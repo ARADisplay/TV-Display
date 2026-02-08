@@ -101,11 +101,11 @@
             opacity: 0.9;
         }
 
-        /* Settings button */
-        .settings-button {
+        /* Control buttons */
+        .settings-button,
+        .fullscreen-button {
             position: fixed;
             bottom: 30px;
-            right: 30px;
             width: 50px;
             height: 50px;
             background: rgba(0, 120, 212, 0.9);
@@ -123,9 +123,35 @@
             box-shadow: 0 4px 20px rgba(0, 120, 212, 0.4);
         }
 
-        .settings-button:hover {
+        .settings-button {
+            right: 30px;
+        }
+
+        .fullscreen-button {
+            right: 95px;
+        }
+
+        .settings-button:hover,
+        .fullscreen-button:hover {
             background: rgba(0, 120, 212, 1);
+            transform: scale(1.1);
+        }
+
+        .settings-button:hover {
             transform: rotate(90deg) scale(1.1);
+        }
+
+        .fullscreen-button:hover {
+            transform: scale(1.15);
+        }
+
+        /* Fullscreen active state */
+        .fullscreen-button.active {
+            background: rgba(16, 124, 16, 0.9);
+        }
+
+        .fullscreen-button.active:hover {
+            background: rgba(16, 124, 16, 1);
         }
 
         /* Settings Panel */
@@ -446,10 +472,11 @@
     <div class="slide-counter" id="slideCounter">1 / 1</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">09:09</div>
+        <div class="time" id="timeDisplay">09:43</div>
         <div class="date" id="dateDisplay">Sunday, February 8, 2026</div>
     </div>
 
+    <button class="fullscreen-button" id="fullscreenButton" title="Enter Fullscreen (F or F11)">⛶</button>
     <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
     <div class="settings-overlay active" id="settingsOverlay"></div>
 
@@ -462,6 +489,11 @@
         <div class="settings-content">
             <div class="settings-section">
                 <h3>Settings</h3>
+
+                <div class="info-box">
+                    <strong>💡 Fullscreen Mode:</strong><br>
+                    Click the fullscreen button (⛶) or press <strong>F</strong> or <strong>F11</strong> to enter fullscreen mode for the best TV display experience.
+                </div>
                 
                 <div class="form-group">
                     <label>Report Duration (seconds)</label>
@@ -576,7 +608,7 @@
         // ============================================================
         const EMBEDDED_CONFIG = {
           "reportDuration": 30000,
-          "autoRefreshHours": 12000,
+          "autoRefreshHours": 1200,
           "reports": [
                     {
                               "name": "Production",
@@ -903,8 +935,26 @@
                         case 'k':
                             this.isPaused ? this.resume() : this.pause();
                             break;
+                        case 'f':
+                        case 'F':
+                        case 'F11':
+                            e.preventDefault();
+                            this.toggleFullscreen();
+                            break;
                     }
                 });
+            }
+
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error('Error attempting to enable fullscreen:', err);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
             }
 
             pause() {
@@ -940,6 +990,26 @@
             kiosk = new PowerBIKiosk(EMBEDDED_CONFIG);
             settingsUI = new SettingsUI(kiosk);
             window.kiosk = kiosk;
+
+            // Fullscreen button
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            
+            fullscreenButton.addEventListener('click', () => {
+                kiosk.toggleFullscreen();
+            });
+
+            // Update fullscreen button appearance
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenButton.classList.add('active');
+                    fullscreenButton.title = 'Exit Fullscreen (F or F11)';
+                    fullscreenButton.textContent = '⛶';
+                } else {
+                    fullscreenButton.classList.remove('active');
+                    fullscreenButton.title = 'Enter Fullscreen (F or F11)';
+                    fullscreenButton.textContent = '⛶';
+                }
+            });
         });
     </script>
 
