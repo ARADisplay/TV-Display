@@ -214,8 +214,7 @@
         }
 
         .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group select {
+        .form-group input[type="number"] {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -225,8 +224,7 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #0078d4;
         }
@@ -244,7 +242,6 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
-            position: relative;
         }
 
         .slide-item-header {
@@ -276,14 +273,7 @@
             background: #c50f1f;
         }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
         .btn {
-            flex: 1;
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
@@ -296,25 +286,18 @@
         .btn-primary {
             background: #0078d4;
             color: #fff;
+            width: 100%;
+            margin-bottom: 10px;
         }
 
         .btn-primary:hover {
             background: #106ebe;
         }
 
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-            border: 2px solid #e0e0e0;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
         .btn-success {
             background: #107c10;
             color: #fff;
+            width: 100%;
         }
 
         .btn-success:hover {
@@ -356,40 +339,17 @@
             border-radius: 8px;
             z-index: 3000;
             display: none;
-            animation: slideDown 0.3s ease-out;
             box-shadow: 0 4px 20px rgba(16, 124, 16, 0.4);
         }
 
         .success-message.show {
             display: block;
+            animation: slideDown 0.3s ease-out;
         }
 
         @keyframes slideDown {
-            from {
-                transform: translate(-50%, -100px);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-
-        .export-import-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        textarea.config-textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 12px;
-            resize: vertical;
+            from { transform: translate(-50%, -100px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
 
         .info-box {
@@ -399,11 +359,6 @@
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 13px;
-            color: #333;
-        }
-
-        .info-box strong {
-            color: #0078d4;
         }
 
         .warning-box {
@@ -413,18 +368,31 @@
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 13px;
-            color: #333;
         }
 
-        .warning-box strong {
-            color: #f59b00;
+        .success-box {
+            background: #dff6dd;
+            border-left: 4px solid #107c10;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
         }
 
-        /* Welcome screen for empty state */
+        textarea.html-output {
+            width: 100%;
+            min-height: 300px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11px;
+            resize: vertical;
+            background: #f9f9f9;
+        }
+
         .welcome-screen {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             display: flex;
@@ -456,203 +424,123 @@
             color: #0078d4;
             padding: 16px 40px;
             font-size: 18px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
         }
 
         .welcome-screen .btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .welcome-screen.hidden {
             display: none;
         }
-
-        @media (max-width: 768px) {
-            .settings-panel {
-                width: 100%;
-                right: -100%;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Welcome screen (shown when no reports configured) -->
+    <!-- Welcome screen -->
     <div class="welcome-screen" id="welcomeScreen">
         <h1>📊 Power BI Dashboard Kiosk</h1>
-        <p>Display your Power BI reports in a professional rotating carousel. Click the settings button below to add your first report.</p>
-        <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Open Settings to Get Started</button>
+        <p>Configure your Power BI reports and download the updated HTML file to share with others.</p>
+        <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Configure Reports</button>
     </div>
 
-    <div class="kiosk-container" id="kioskContainer">
-        <!-- Power BI slides will be dynamically inserted here -->
-    </div>
-
-    <!-- Progress bar -->
+    <div class="kiosk-container" id="kioskContainer"></div>
     <div class="progress-bar" id="progressBar"></div>
-
-    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter">1 / 1</div>
-
-    <!-- Date and Time -->
+    
     <div class="datetime-display">
         <div class="time" id="timeDisplay">00:00</div>
         <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
     </div>
 
-    <!-- Settings button -->
-    <button class="settings-button" id="settingsButton" title="Open Settings">⚙</button>
-
-    <!-- Settings overlay -->
+    <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
     <div class="settings-overlay" id="settingsOverlay"></div>
 
-    <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
-            <h2>Power BI Kiosk Settings</h2>
+            <h2>Kiosk Configuration</h2>
             <button class="close-settings" id="closeSettings">×</button>
         </div>
         
         <div class="settings-content">
-            <!-- General Settings -->
             <div class="settings-section">
-                <h3>General Settings</h3>
+                <h3>Settings</h3>
                 
                 <div class="form-group">
                     <label>Report Duration (seconds)</label>
                     <input type="number" id="reportDuration" min="10" max="600" value="30">
-                    <small>How long to display each Power BI report (10-600 seconds)</small>
+                    <small>Default display time for each report</small>
                 </div>
 
                 <div class="form-group">
                     <label>Auto-Refresh (hours)</label>
                     <input type="number" id="autoRefreshHours" min="1" max="168" value="24">
-                    <small>Automatically reload page every X hours to refresh data (1-168)</small>
+                    <small>Reload page to refresh data</small>
                 </div>
             </div>
 
-            <!-- Power BI Reports Configuration -->
             <div class="settings-section">
                 <h3>Power BI Reports</h3>
                 
                 <div class="info-box">
-                    <strong>📊 Power BI Embed URLs</strong><br><br>
-                    
-                    <strong>For Authenticated Reports:</strong><br>
-                    1. Open report in Power BI Service (app.powerbi.com)<br>
+                    <strong>📊 How to get Power BI URLs:</strong><br>
+                    1. Open report in Power BI Service<br>
                     2. File → Embed report → Website or portal<br>
                     3. Copy the embed URL<br>
-                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY</code><br><br>
-                    
-                    <strong>For Public Reports:</strong><br>
-                    1. File → Share → Publish to web (public)<br>
-                    2. Create embed code<br>
-                    3. Copy the link (not iframe code)<br>
-                    Format: <code>https://app.powerbi.com/view?r=XXXXX</code>
+                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY</code>
                 </div>
 
-                <div class="warning-box">
-                    <strong>⚠️ Authentication Required</strong><br>
-                    If using authenticated reports (reportEmbed URLs), you must be signed into Microsoft in this browser. The Power BI login page will appear in the iframe if not authenticated.
-                </div>
+                <div class="slides-list" id="slidesList"></div>
 
-                <div class="slides-list" id="slidesList">
-                    <!-- Power BI report items will be added here dynamically -->
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" id="addReport">+ Add Power BI Report</button>
-                </div>
+                <button class="btn btn-primary" id="addReport">+ Add Power BI Report</button>
             </div>
 
-            <!-- Export/Import Configuration -->
             <div class="settings-section">
-                <h3>Backup & Restore</h3>
+                <h3>Save & Share</h3>
                 
-                <div class="form-group">
-                    <label>Export Configuration</label>
-                    <textarea class="config-textarea" id="exportConfig" readonly></textarea>
-                    <small>Copy this to backup your configuration</small>
+                <div class="warning-box">
+                    <strong>⚠️ Important:</strong> To save your configuration permanently and share with others, you need to download the updated HTML file below.
                 </div>
 
-                <div class="form-group">
-                    <label>Import Configuration</label>
-                    <textarea class="config-textarea" id="importConfig" placeholder="Paste configuration JSON here..."></textarea>
-                    <small>Paste a previously exported configuration</small>
+                <button class="btn btn-success" id="generateHTML">💾 Download Updated HTML File</button>
+                
+                <div class="success-box" id="downloadSuccess" style="display: none; margin-top: 15px;">
+                    <strong>✓ HTML Generated!</strong><br>
+                    The file will download automatically. Share this file with others - it includes all your configured reports!
                 </div>
 
-                <div class="export-import-group">
-                    <button class="btn btn-secondary" id="copyExport">Copy to Clipboard</button>
-                    <button class="btn btn-secondary" id="loadImport">Load Configuration</button>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="settings-section">
-                <div class="button-group">
-                    <button class="btn btn-success" id="saveSettings">💾 Save & Apply</button>
-                    <button class="btn btn-secondary" id="resetSettings">Reset to Default</button>
+                <div style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Preview Generated HTML (for advanced users)</label>
+                        <textarea class="html-output" id="htmlOutput" readonly></textarea>
+                        <small>This is the complete HTML file with your reports embedded</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Success message -->
-    <div class="success-message" id="successMessage">Settings saved successfully!</div>
+    <div class="success-message" id="successMessage">Configuration updated!</div>
 
     <script>
         // ============================================================
-        // DEFAULT CONFIGURATION
+        // EMBEDDED CONFIGURATION - EDIT THESE VALUES
         // ============================================================
-        const DEFAULT_CONFIG = {
+        const EMBEDDED_CONFIG = {
             reportDuration: 30000,
             autoRefreshHours: 24,
-            reports: []
+            reports: [
+                // Add your Power BI reports here
+                // Example:
+                // {
+                //     name: "Sales Dashboard",
+                //     embedUrl: "https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY",
+                //     duration: 45000
+                // },
+            ]
         };
 
         // ============================================================
-        // STORAGE MANAGER
-        // ============================================================
-        class StorageManager {
-            static STORAGE_KEY = 'powerbi_kiosk_config';
-
-            static save(config) {
-                try {
-                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(config));
-                    return true;
-                } catch (error) {
-                    console.error('Failed to save configuration:', error);
-                    return false;
-                }
-            }
-
-            static load() {
-                try {
-                    const data = localStorage.getItem(this.STORAGE_KEY);
-                    return data ? JSON.parse(data) : null;
-                } catch (error) {
-                    console.error('Failed to load configuration:', error);
-                    return null;
-                }
-            }
-
-            static clear() {
-                try {
-                    localStorage.removeItem(this.STORAGE_KEY);
-                    return true;
-                } catch (error) {
-                    console.error('Failed to clear configuration:', error);
-                    return false;
-                }
-            }
-        }
-
-        // ============================================================
-        // SETTINGS UI MANAGER
+        // APPLICATION CODE
         // ============================================================
         class SettingsUI {
             constructor(kiosk) {
@@ -660,7 +548,6 @@
                 this.settingsPanel = document.getElementById('settingsPanel');
                 this.settingsOverlay = document.getElementById('settingsOverlay');
                 this.slidesList = document.getElementById('slidesList');
-                
                 this.setupEventListeners();
             }
 
@@ -668,12 +555,8 @@
                 document.getElementById('settingsButton').addEventListener('click', () => this.open());
                 document.getElementById('closeSettings').addEventListener('click', () => this.close());
                 this.settingsOverlay.addEventListener('click', () => this.close());
-
                 document.getElementById('addReport').addEventListener('click', () => this.addReport());
-                document.getElementById('saveSettings').addEventListener('click', () => this.save());
-                document.getElementById('resetSettings').addEventListener('click', () => this.reset());
-                document.getElementById('copyExport').addEventListener('click', () => this.copyExport());
-                document.getElementById('loadImport').addEventListener('click', () => this.loadImport());
+                document.getElementById('generateHTML').addEventListener('click', () => this.generateHTML());
 
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape' && this.settingsPanel.classList.contains('open')) {
@@ -696,13 +579,9 @@
             }
 
             loadCurrentSettings() {
-                const config = this.kiosk.config;
-
-                document.getElementById('reportDuration').value = config.reportDuration / 1000;
-                document.getElementById('autoRefreshHours').value = config.autoRefreshHours;
-
-                this.renderReports(config.reports);
-                this.updateExportConfig();
+                document.getElementById('reportDuration').value = this.kiosk.config.reportDuration / 1000;
+                document.getElementById('autoRefreshHours').value = this.kiosk.config.autoRefreshHours;
+                this.renderReports(this.kiosk.config.reports);
             }
 
             renderReports(reports) {
@@ -711,71 +590,58 @@
                 if (reports.length === 0) {
                     const emptyState = document.createElement('div');
                     emptyState.className = 'info-box';
-                    emptyState.innerHTML = '<strong>No reports configured</strong><br>Click "+ Add Power BI Report" to get started.';
+                    emptyState.innerHTML = '<strong>No reports configured</strong><br>Click "+ Add Power BI Report" to add your first report.';
                     this.slidesList.appendChild(emptyState);
                     return;
                 }
                 
                 reports.forEach((report, index) => {
-                    const reportItem = this.createReportItem(report, index);
-                    this.slidesList.appendChild(reportItem);
+                    const div = document.createElement('div');
+                    div.className = 'slide-item';
+                    div.dataset.index = index;
+
+                    div.innerHTML = `
+                        <div class="slide-item-header">
+                            <h4>Report ${index + 1}: ${report.name || 'Unnamed'}</h4>
+                            <button class="remove-slide" data-index="${index}">Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Name</label>
+                            <input type="text" class="report-name" value="${report.name || ''}" 
+                                   placeholder="e.g., Sales Dashboard">
+                        </div>
+                        <div class="form-group">
+                            <label>Power BI Embed URL</label>
+                            <input type="text" class="report-url" value="${report.embedUrl || ''}" 
+                                   placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                        </div>
+                        <div class="form-group">
+                            <label>Duration (seconds)</label>
+                            <input type="number" class="report-duration" value="${report.duration / 1000}" 
+                                   min="10" max="600">
+                        </div>
+                    `;
+
+                    div.querySelector('.remove-slide').addEventListener('click', () => this.removeReport(index));
+                    this.slidesList.appendChild(div);
                 });
             }
 
-            createReportItem(report, index) {
-                const div = document.createElement('div');
-                div.className = 'slide-item';
-                div.dataset.index = index;
-
-                div.innerHTML = `
-                    <div class="slide-item-header">
-                        <h4>Report ${index + 1}: ${report.name || 'Unnamed Report'}</h4>
-                        <button class="remove-slide" data-index="${index}">Remove</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Report Name</label>
-                        <input type="text" class="report-name" value="${report.name || ''}" 
-                               placeholder="e.g., Sales Dashboard">
-                        <small>Display name for this report</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Power BI Embed URL</label>
-                        <input type="text" class="report-url" value="${report.embedUrl || ''}" 
-                               placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
-                        <small>Secure embed URL or public view URL</small>
-                    </div>
-                    <div class="form-group">
-                        <label>Duration (seconds)</label>
-                        <input type="number" class="report-duration" value="${report.duration / 1000}" 
-                               min="10" max="600">
-                        <small>How long to display this report</small>
-                    </div>
-                `;
-
-                div.querySelector('.remove-slide').addEventListener('click', () => this.removeReport(index));
-
-                return div;
-            }
-
             addReport() {
-                const config = this.getCurrentConfig();
-                const newReport = {
+                const currentConfig = this.getCurrentConfig();
+                currentConfig.reports.push({
                     name: '',
                     embedUrl: '',
-                    duration: config.reportDuration
-                };
-
-                config.reports.push(newReport);
-                this.renderReports(config.reports);
-                
-                // Scroll to bottom
+                    duration: currentConfig.reportDuration
+                });
+                this.renderReports(currentConfig.reports);
                 this.slidesList.scrollTop = this.slidesList.scrollHeight;
             }
 
             removeReport(index) {
-                const config = this.getCurrentConfig();
-                config.reports.splice(index, 1);
-                this.renderReports(config.reports);
+                const currentConfig = this.getCurrentConfig();
+                currentConfig.reports.splice(index, 1);
+                this.renderReports(currentConfig.reports);
             }
 
             getCurrentConfig() {
@@ -792,105 +658,64 @@
                     const duration = parseInt(item.querySelector('.report-duration')?.value || 30) * 1000;
 
                     if (url) {
-                        config.reports.push({
-                            name: name,
-                            embedUrl: url,
-                            duration: duration
-                        });
+                        config.reports.push({ name, embedUrl: url, duration });
                     }
                 });
 
                 return config;
             }
 
-            save() {
+            generateHTML() {
                 const config = this.getCurrentConfig();
 
                 if (config.reports.length === 0) {
-                    alert('Please add at least one Power BI report!');
+                    alert('Please add at least one Power BI report before generating the HTML file!');
                     return;
                 }
 
-                if (StorageManager.save(config)) {
-                    this.kiosk.updateConfig(config);
-                    this.showSuccess('Settings saved successfully!');
-                    setTimeout(() => this.close(), 1000);
-                } else {
-                    alert('Failed to save settings. Please check browser storage permissions.');
-                }
-            }
+                // Get current HTML
+                const currentHTML = document.documentElement.outerHTML;
 
-            reset() {
-                if (confirm('Reset to default configuration? This will remove all your reports.')) {
-                    StorageManager.clear();
-                    this.kiosk.updateConfig(DEFAULT_CONFIG);
-                    this.loadCurrentSettings();
-                    this.showSuccess('Settings reset to default');
-                }
-            }
+                // Create updated config string
+                const configString = `const EMBEDDED_CONFIG = ${JSON.stringify(config, null, 12)};`;
 
-            updateExportConfig() {
-                const config = this.getCurrentConfig();
-                document.getElementById('exportConfig').value = JSON.stringify(config, null, 2);
-            }
+                // Replace the EMBEDDED_CONFIG section in the HTML
+                const updatedHTML = currentHTML.replace(
+                    /const EMBEDDED_CONFIG = \{[\s\S]*?\};/,
+                    configString
+                );
 
-            copyExport() {
-                this.updateExportConfig();
-                const textarea = document.getElementById('exportConfig');
-                textarea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    this.showSuccess('Configuration copied to clipboard!');
-                } catch (err) {
-                    navigator.clipboard.writeText(textarea.value).then(() => {
-                        this.showSuccess('Configuration copied to clipboard!');
-                    }).catch(() => {
-                        alert('Please manually copy the configuration text');
-                    });
-                }
-            }
+                // Show preview
+                document.getElementById('htmlOutput').value = updatedHTML;
 
-            loadImport() {
-                const importText = document.getElementById('importConfig').value.trim();
-                
-                if (!importText) {
-                    alert('Please paste a configuration first!');
-                    return;
-                }
+                // Download file
+                const blob = new Blob([updatedHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'powerbi-kiosk-configured.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
 
-                try {
-                    const config = JSON.parse(importText);
-                    
-                    if (!config.reports || !Array.isArray(config.reports)) {
-                        throw new Error('Invalid configuration format');
-                    }
+                // Show success message
+                document.getElementById('downloadSuccess').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('downloadSuccess').style.display = 'none';
+                }, 5000);
 
-                    if (StorageManager.save(config)) {
-                        this.kiosk.updateConfig(config);
-                        this.loadCurrentSettings();
-                        this.showSuccess('Configuration imported successfully!');
-                        document.getElementById('importConfig').value = '';
-                    }
-                } catch (error) {
-                    alert('Invalid configuration format: ' + error.message);
-                }
+                this.showSuccess('HTML file downloaded! Share this file - it includes all your reports.');
             }
 
             showSuccess(message) {
                 const successMsg = document.getElementById('successMessage');
                 successMsg.textContent = message;
                 successMsg.classList.add('show');
-                
-                setTimeout(() => {
-                    successMsg.classList.remove('show');
-                }, 3000);
+                setTimeout(() => successMsg.classList.remove('show'), 4000);
             }
         }
 
-        // ============================================================
-        // KIOSK APPLICATION
-        // ============================================================
         class PowerBIKiosk {
             constructor(config) {
                 this.config = config;
@@ -915,14 +740,12 @@
                 this.startCarousel();
                 this.setupAutoRefresh();
                 this.setupKeyboardControls();
-                this.setupWakeLock();
             }
 
             createSlides() {
                 this.container.innerHTML = '';
                 this.slides = [];
                 
-                // Show/hide welcome screen
                 if (this.config.reports.length === 0) {
                     this.welcomeScreen.classList.remove('hidden');
                     return;
@@ -930,32 +753,24 @@
                     this.welcomeScreen.classList.add('hidden');
                 }
                 
-                this.config.reports.forEach((report, index) => {
+                this.config.reports.forEach((report) => {
                     const slide = document.createElement('div');
                     slide.className = 'slide';
-                    slide.dataset.index = index;
                     
                     const iframe = document.createElement('iframe');
                     iframe.src = report.embedUrl;
                     iframe.allowFullscreen = true;
                     iframe.setAttribute('frameborder', '0');
-                    iframe.setAttribute('allowtransparency', 'true');
                     
                     slide.appendChild(iframe);
                     this.container.appendChild(slide);
-                    
-                    this.slides.push({
-                        element: slide,
-                        config: report
-                    });
+                    this.slides.push({ element: slide, config: report });
                 });
                 
                 if (this.slides.length > 0) {
                     this.slides[0].element.classList.add('active');
                     this.updateCounter();
                 }
-                
-                console.log(`Created ${this.slides.length} Power BI report slides`);
             }
 
             startCarousel() {
@@ -979,8 +794,7 @@
                 clearTimeout(this.slideTimeout);
                 this.slideTimeout = setTimeout(() => {
                     this.isTransitioning = false;
-                    const nextIndex = (index + 1) % this.slides.length;
-                    this.showSlide(nextIndex);
+                    this.showSlide((index + 1) % this.slides.length);
                 }, duration);
             }
 
@@ -993,9 +807,7 @@
             }
 
             updateCounter() {
-                const current = this.currentSlideIndex + 1;
-                const total = this.slides.length;
-                this.slideCounter.textContent = `${current} / ${total}`;
+                this.slideCounter.textContent = `${this.currentSlideIndex + 1} / ${this.slides.length}`;
             }
 
             setupClock() {
@@ -1008,19 +820,13 @@
                     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
                 };
-                
                 updateClock();
                 setInterval(updateClock, 1000);
             }
 
             setupAutoRefresh() {
                 const refreshInterval = this.config.autoRefreshHours * 60 * 60 * 1000;
-                setTimeout(() => {
-                    console.log('Auto-refreshing page...');
-                    location.reload();
-                }, refreshInterval);
-                
-                console.log(`Auto-refresh scheduled in ${this.config.autoRefreshHours} hours`);
+                setTimeout(() => location.reload(), refreshInterval);
             }
 
             setupKeyboardControls() {
@@ -1038,96 +844,45 @@
                             break;
                         case ' ':
                         case 'k':
-                            if (this.isPaused) {
-                                this.resume();
-                            } else {
-                                this.pause();
-                            }
+                            this.isPaused ? this.resume() : this.pause();
                             break;
                     }
                 });
             }
 
-            setupWakeLock() {
-                if ('wakeLock' in navigator) {
-                    let wakeLock = null;
-                    
-                    const requestWakeLock = async () => {
-                        try {
-                            wakeLock = await navigator.wakeLock.request('screen');
-                            console.log('Screen wake lock acquired');
-                        } catch (err) {
-                            console.error('Wake lock error:', err);
-                        }
-                    };
-                    
-                    requestWakeLock();
-                    
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible') {
-                            requestWakeLock();
-                        }
-                    });
-                }
-            }
-
-            updateConfig(newConfig) {
-                this.config = newConfig;
-                clearTimeout(this.slideTimeout);
-                this.isTransitioning = false;
-                this.isPaused = false;
-                this.currentSlideIndex = 0;
-                this.createSlides();
-                this.startCarousel();
-            }
-
             pause() {
                 this.isPaused = true;
                 clearTimeout(this.slideTimeout);
-                this.progressBar.style.animationPlayState = 'paused';
-                console.log('Carousel paused');
             }
 
             resume() {
                 this.isPaused = false;
                 this.isTransitioning = false;
                 this.showSlide(this.currentSlideIndex);
-                console.log('Carousel resumed');
             }
 
             next() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                const nextIndex = (this.currentSlideIndex + 1) % this.slides.length;
-                this.showSlide(nextIndex);
+                this.showSlide((this.currentSlideIndex + 1) % this.slides.length);
             }
 
             previous() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                const prevIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
-                this.showSlide(prevIndex);
+                this.showSlide((this.currentSlideIndex - 1 + this.slides.length) % this.slides.length);
             }
         }
 
-        // ============================================================
-        // INITIALIZE APPLICATION
-        // ============================================================
+        // Initialize
         let kiosk, settingsUI;
         
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, starting Power BI kiosk...');
-            
-            const savedConfig = StorageManager.load();
-            const config = savedConfig || DEFAULT_CONFIG;
-            
-            kiosk = new PowerBIKiosk(config);
+            kiosk = new PowerBIKiosk(EMBEDDED_CONFIG);
             settingsUI = new SettingsUI(kiosk);
-            
             window.kiosk = kiosk;
-            console.log('Power BI Kiosk initialized. Use window.kiosk for debugging');
         });
     </script>
 </body>
