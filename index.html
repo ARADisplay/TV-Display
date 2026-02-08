@@ -472,11 +472,11 @@
     <div class="slide-counter" id="slideCounter">1 / 1</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">09:43</div>
+        <div class="time" id="timeDisplay">13:16</div>
         <div class="date" id="dateDisplay">Sunday, February 8, 2026</div>
     </div>
 
-    <button class="fullscreen-button" id="fullscreenButton" title="Enter Fullscreen (F or F11)">⛶</button>
+    <button class="fullscreen-button" id="fullscreenButton" title="Toggle Fullscreen">⛶</button>
     <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
     <div class="settings-overlay active" id="settingsOverlay"></div>
 
@@ -501,10 +501,9 @@
                     <small>Default display time for each report</small>
                 </div>
 
-                <div class="form-group">
-                    <label>Auto-Refresh (hours)</label>
-                    <input type="number" id="autoRefreshHours" min="1" max="168" value="24">
-                    <small>Reload page to refresh data</small>
+                <div class="info-box">
+                    <strong>🔄 Data Refresh:</strong><br>
+                    Power BI reports refresh automatically based on their dataset schedule. The page will stay open continuously without reloading.
                 </div>
             </div>
 
@@ -608,7 +607,6 @@
         // ============================================================
         const EMBEDDED_CONFIG = {
           "reportDuration": 30000,
-          "autoRefreshHours": 1200,
           "reports": [
                     {
                               "name": "Production",
@@ -669,7 +667,6 @@
 
             loadCurrentSettings() {
                 document.getElementById('reportDuration').value = this.kiosk.config.reportDuration / 1000;
-                document.getElementById('autoRefreshHours').value = this.kiosk.config.autoRefreshHours;
                 this.renderReports(this.kiosk.config.reports);
             }
 
@@ -736,7 +733,6 @@
             getCurrentConfig() {
                 const config = {
                     reportDuration: parseInt(document.getElementById('reportDuration').value) * 1000,
-                    autoRefreshHours: parseInt(document.getElementById('autoRefreshHours').value),
                     reports: []
                 };
 
@@ -827,7 +823,6 @@
                 this.createSlides();
                 this.setupClock();
                 this.startCarousel();
-                this.setupAutoRefresh();
                 this.setupKeyboardControls();
             }
 
@@ -911,11 +906,6 @@
                 };
                 updateClock();
                 setInterval(updateClock, 1000);
-            }
-
-            setupAutoRefresh() {
-                const refreshInterval = this.config.autoRefreshHours * 60 * 60 * 1000;
-                setTimeout(() => location.reload(), refreshInterval);
             }
 
             setupKeyboardControls() {
