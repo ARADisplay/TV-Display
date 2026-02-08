@@ -472,7 +472,7 @@
     <div class="slide-counter" id="slideCounter">1 / 1</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">13:16</div>
+        <div class="time" id="timeDisplay">15:33</div>
         <div class="date" id="dateDisplay">Sunday, February 8, 2026</div>
     </div>
 
@@ -501,9 +501,15 @@
                     <small>Default display time for each report</small>
                 </div>
 
+                <div class="form-group">
+                    <label>Token Refresh Interval (minutes)</label>
+                    <input type="number" id="tokenRefresh" min="5" max="120" value="45">
+                    <small>Reload reports to refresh authentication (prevents login prompts)</small>
+                </div>
+
                 <div class="info-box">
-                    <strong>🔄 Data Refresh:</strong><br>
-                    Power BI reports refresh automatically based on their dataset schedule. The page will stay open continuously without reloading.
+                    <strong>🔄 How Authentication Works:</strong><br>
+                    Power BI tokens expire after ~1 hour. To prevent login prompts, reports reload periodically to get fresh tokens while staying authenticated. This happens in the background without disrupting the display.
                 </div>
             </div>
 
@@ -607,6 +613,7 @@
         // ============================================================
         const EMBEDDED_CONFIG = {
           "reportDuration": 30000,
+          "tokenRefresh": 45,
           "reports": [
                     {
                               "name": "Production",
@@ -667,6 +674,7 @@
 
             loadCurrentSettings() {
                 document.getElementById('reportDuration').value = this.kiosk.config.reportDuration / 1000;
+                document.getElementById('tokenRefresh').value = this.kiosk.config.tokenRefresh || 45;
                 this.renderReports(this.kiosk.config.reports);
             }
 
@@ -733,6 +741,7 @@
             getCurrentConfig() {
                 const config = {
                     reportDuration: parseInt(document.getElementById('reportDuration').value) * 1000,
+                    tokenRefresh: parseInt(document.getElementById('tokenRefresh').value),
                     reports: []
                 };
 
@@ -824,6 +833,7 @@
                 this.setupClock();
                 this.startCarousel();
                 this.setupKeyboardControls();
+                this.setupTokenRefresh();
             }
 
             createSlides() {
@@ -906,6 +916,45 @@
                 };
                 updateClock();
                 setInterval(updateClock, 1000);
+            }
+
+            setupTokenRefresh() {
+                // Refresh iframe tokens periodically to prevent authentication expiry
+                const refreshMinutes = this.config.tokenRefresh || 45;
+                const refreshInterval = refreshMinutes * 60 * 1000;
+                
+                console.log(`Token refresh scheduled every ${refreshMinutes} minutes`);
+                
+                setInterval(() => {
+                    console.log('Refreshing Power BI tokens...');
+                    this.refreshAllIframes();
+                }, refreshInterval);
+            }
+
+            refreshAllIframes() {
+                // Reload all iframes to get fresh authentication tokens
+                // This happens in the background without affecting the visible slide
+                this.slides.forEach((slide, index) => {
+                    const iframe = slide.element.querySelector('iframe');
+                    if (iframe) {
+                        // Store current src
+                        const currentSrc = iframe.src;
+                        
+                        // Only reload if this isn't the currently visible slide
+                        // to avoid visual disruption
+                        if (index !== this.currentSlideIndex) {
+                            // Reload iframe by resetting src
+                            iframe.src = currentSrc;
+                            console.log(`Refreshed iframe ${index + 1}: ${slide.config.name || 'Unnamed'}`);
+                        } else {
+                            // For the active slide, schedule refresh after it rotates away
+                            setTimeout(() => {
+                                iframe.src = currentSrc;
+                                console.log(`Refreshed active iframe ${index + 1}: ${slide.config.name || 'Unnamed'}`);
+                            }, 5000); // Wait 5 seconds after rotation
+                        }
+                    }
+                });
             }
 
             setupKeyboardControls() {
