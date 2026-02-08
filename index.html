@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Office TV Kiosk</title>
+    <title>Power BI Dashboard Kiosk</title>
     <style>
         * {
             margin: 0;
@@ -24,7 +24,7 @@
             overflow: hidden;
         }
 
-        /* Slide styling */
+        /* Power BI slide styling */
         .slide {
             position: absolute;
             width: 100%;
@@ -34,7 +34,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: #f3f2f1;
         }
 
         .slide.active {
@@ -42,48 +42,11 @@
             z-index: 1;
         }
 
-        /* Image slide styling */
-        .slide.image-slide {
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .slide.image-slide.fit-cover {
-            background-size: cover;
-        }
-
-        .slide.image-slide.fit-contain {
-            background-size: contain;
-        }
-
-        .slide.image-slide.fit-fill {
-            background-size: 100% 100%;
-        }
-
-        .slide.image-slide.fit-actual {
-            background-size: auto;
-        }
-
-        .slide.image-slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent 20%, transparent 80%, rgba(0,0,0,0.3));
-        }
-
-        /* Power BI slide - full screen iframe */
-        .slide.powerbi-slide {
-            background: #f3f2f1;
-            padding: 0;
-        }
-
-        .slide.powerbi-slide iframe {
+        .slide iframe {
             width: 100%;
             height: 100%;
             border: none;
+            background: #fff;
         }
 
         /* Progress bar */
@@ -171,8 +134,8 @@
         .settings-panel {
             position: fixed;
             top: 0;
-            right: -700px;
-            width: 700px;
+            right: -650px;
+            width: 650px;
             height: 100vh;
             background: #fff;
             z-index: 2000;
@@ -359,7 +322,7 @@
         }
 
         .slides-list {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
             padding-right: 10px;
         }
@@ -457,24 +420,56 @@
             color: #f59b00;
         }
 
-        .error-box {
-            background: #fde7e9;
-            border-left: 4px solid #e81123;
-            padding: 15px;
-            border-radius: 8px;
+        /* Welcome screen for empty state */
+        .welcome-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0078d4 0%, #50e6ff 100%);
+            color: #fff;
+            text-align: center;
+            padding: 40px;
+            z-index: 2;
+        }
+
+        .welcome-screen h1 {
+            font-size: 48px;
             margin-bottom: 20px;
-            font-size: 13px;
-            color: #333;
+            font-weight: 700;
         }
 
-        .error-box strong {
-            color: #e81123;
+        .welcome-screen p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.5;
         }
 
-        .help-link {
+        .welcome-screen .btn {
+            background: #fff;
             color: #0078d4;
-            text-decoration: underline;
+            padding: 16px 40px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .welcome-screen .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-screen.hidden {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -482,103 +477,99 @@
                 width: 100%;
                 right: -100%;
             }
-            
-            .datetime-display .time {
-                font-size: 20px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="kiosk-container" id="kioskContainer"></div>
+    <!-- Welcome screen (shown when no reports configured) -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <h1>📊 Power BI Dashboard Kiosk</h1>
+        <p>Display your Power BI reports in a professional rotating carousel. Click the settings button below to add your first report.</p>
+        <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Open Settings to Get Started</button>
+    </div>
+
+    <div class="kiosk-container" id="kioskContainer">
+        <!-- Power BI slides will be dynamically inserted here -->
+    </div>
+
+    <!-- Progress bar -->
     <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Slide counter -->
     <div class="slide-counter" id="slideCounter">1 / 1</div>
+
+    <!-- Date and Time -->
     <div class="datetime-display">
         <div class="time" id="timeDisplay">00:00</div>
         <div class="date" id="dateDisplay">Monday, January 1, 2024</div>
     </div>
+
+    <!-- Settings button -->
     <button class="settings-button" id="settingsButton" title="Open Settings">⚙</button>
+
+    <!-- Settings overlay -->
     <div class="settings-overlay" id="settingsOverlay"></div>
 
+    <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
-            <h2>Kiosk Settings</h2>
+            <h2>Power BI Kiosk Settings</h2>
             <button class="close-settings" id="closeSettings">×</button>
         </div>
         
         <div class="settings-content">
+            <!-- General Settings -->
             <div class="settings-section">
                 <h3>General Settings</h3>
                 
                 <div class="form-group">
-                    <label>Default Slide Duration (seconds)</label>
-                    <input type="number" id="slideDuration" min="5" max="300" value="15">
-                    <small>How long to show each image slide (5-300 seconds)</small>
-                </div>
-
-                <div class="form-group">
-                    <label>Power BI Duration (seconds)</label>
-                    <input type="number" id="powerBiDuration" min="10" max="600" value="30">
-                    <small>How long to show Power BI reports (10-600 seconds)</small>
+                    <label>Report Duration (seconds)</label>
+                    <input type="number" id="reportDuration" min="10" max="600" value="30">
+                    <small>How long to display each Power BI report (10-600 seconds)</small>
                 </div>
 
                 <div class="form-group">
                     <label>Auto-Refresh (hours)</label>
                     <input type="number" id="autoRefreshHours" min="1" max="168" value="24">
-                    <small>Automatically reload page every X hours (1-168)</small>
-                </div>
-
-                <div class="form-group">
-                    <label>Default Image Fit</label>
-                    <select id="defaultImageFit">
-                        <option value="cover">Cover (fill screen, may crop)</option>
-                        <option value="contain">Contain (show full image, may have bars)</option>
-                        <option value="fill">Fill (stretch to fit)</option>
-                        <option value="actual">Actual Size (no scaling)</option>
-                    </select>
-                    <small>How images should fit on screen by default</small>
+                    <small>Automatically reload page every X hours to refresh data (1-168)</small>
                 </div>
             </div>
 
+            <!-- Power BI Reports Configuration -->
             <div class="settings-section">
-                <h3>Slides</h3>
+                <h3>Power BI Reports</h3>
                 
-                <div class="error-box">
-                    <strong>⚠️ IMPORTANT: Power BI Authentication</strong><br><br>
-                    Power BI reports require one of these methods:<br><br>
-                    
-                    <strong>Option 1: Publish to Web (Anonymous - Recommended for TVs)</strong><br>
-                    • Makes report publicly accessible (anyone with link)<br>
-                    • No login required<br>
-                    • URL format: <code>https://app.powerbi.com/view?r=XXXXX</code><br>
-                    • <span class="help-link" onclick="showPublishToWebHelp()">How to publish to web →</span><br><br>
-                    
-                    <strong>Option 2: Secure Embed (Requires Login)</strong><br>
-                    • TV must be logged into Microsoft account<br>
-                    • Account needs report access<br>
-                    • Will prompt for login if not authenticated<br>
-                    • URL format: <code>https://app.powerbi.com/reportEmbed?reportId=...</code><br><br>
-                    
-                    <strong>Option 3: Export as Image (No Authentication)</strong><br>
-                    • Export Power BI report as image (PNG/JPG)<br>
-                    • Upload to SharePoint<br>
-                    • Add as regular image slide<br>
-                    • <span class="help-link" onclick="showExportImageHelp()">How to export as image →</span>
-                </div>
-
                 <div class="info-box">
-                    <strong>Image URLs:</strong> Use full SharePoint URLs<br>
-                    Example: <code>https://tenant.sharepoint.com/sites/site/library/image.jpg</code>
+                    <strong>📊 Power BI Embed URLs</strong><br><br>
+                    
+                    <strong>For Authenticated Reports:</strong><br>
+                    1. Open report in Power BI Service (app.powerbi.com)<br>
+                    2. File → Embed report → Website or portal<br>
+                    3. Copy the embed URL<br>
+                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&groupId=YYY</code><br><br>
+                    
+                    <strong>For Public Reports:</strong><br>
+                    1. File → Share → Publish to web (public)<br>
+                    2. Create embed code<br>
+                    3. Copy the link (not iframe code)<br>
+                    Format: <code>https://app.powerbi.com/view?r=XXXXX</code>
                 </div>
 
-                <div class="slides-list" id="slidesList"></div>
+                <div class="warning-box">
+                    <strong>⚠️ Authentication Required</strong><br>
+                    If using authenticated reports (reportEmbed URLs), you must be signed into Microsoft in this browser. The Power BI login page will appear in the iframe if not authenticated.
+                </div>
+
+                <div class="slides-list" id="slidesList">
+                    <!-- Power BI report items will be added here dynamically -->
+                </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" id="addImageSlide">+ Add Image</button>
-                    <button class="btn btn-secondary" id="addPowerBISlide">+ Add Power BI</button>
+                    <button class="btn btn-primary" id="addReport">+ Add Power BI Report</button>
                 </div>
             </div>
 
+            <!-- Export/Import Configuration -->
             <div class="settings-section">
                 <h3>Backup & Restore</h3>
                 
@@ -600,6 +591,7 @@
                 </div>
             </div>
 
+            <!-- Action Buttons -->
             <div class="settings-section">
                 <div class="button-group">
                     <button class="btn btn-success" id="saveSettings">💾 Save & Apply</button>
@@ -609,101 +601,24 @@
         </div>
     </div>
 
+    <!-- Success message -->
     <div class="success-message" id="successMessage">Settings saved successfully!</div>
 
     <script>
+        // ============================================================
+        // DEFAULT CONFIGURATION
+        // ============================================================
         const DEFAULT_CONFIG = {
-            slideDuration: 15000,
-            powerBiDuration: 30000,
+            reportDuration: 30000,
             autoRefreshHours: 24,
-            defaultImageFit: 'contain',
-            slides: [
-                {
-                    type: 'image',
-                    url: 'https://via.placeholder.com/1920x1080/0078d4/ffffff?text=Office+TV+Kiosk+-+Click+Settings+to+Configure',
-                    duration: 15000,
-                    imageFit: 'contain'
-                },
-                {
-                    type: 'image',
-                    url: 'https://via.placeholder.com/1920x1080/50e6ff/000000?text=Add+SharePoint+Images+or+Export+Power+BI+as+Images',
-                    duration: 15000,
-                    imageFit: 'contain'
-                }
-            ]
+            reports: []
         };
 
-        function showPublishToWebHelp() {
-            alert(`HOW TO PUBLISH POWER BI TO WEB:
-
-1. Open your report in Power BI Service (app.powerbi.com)
-
-2. Click "File" menu (top-left)
-
-3. Click "Share" → "Publish to web (public)"
-
-4. Read the warning carefully:
-   ⚠️ This makes your report PUBLIC
-   ⚠️ Anyone with the link can view it
-   ⚠️ No authentication required
-
-5. Click "Create embed code"
-
-6. Click "Publish"
-
-7. Copy the LINK (not the iframe code)
-   Format: https://app.powerbi.com/view?r=XXXXX
-
-8. Paste this link in the Power BI slide settings
-
-9. Test the link in a browser first!
-
-NOTE: Only use this for non-sensitive data that can be public.`);
-        }
-
-        function showExportImageHelp() {
-            alert(`HOW TO EXPORT POWER BI AS IMAGE:
-
-METHOD 1: Export from Power BI Service
-1. Open report in Power BI Service
-2. Click "File" → "Export" → "Export this page"
-3. Choose PNG or PDF format
-4. Download the file
-5. Upload to SharePoint
-6. Get SharePoint URL
-7. Add as Image slide (not Power BI slide)
-
-METHOD 2: Screenshot
-1. Open report in browser
-2. Press F11 for fullscreen
-3. Take screenshot (Print Screen)
-4. Save as image
-5. Upload to SharePoint
-6. Use as Image slide
-
-METHOD 3: Power BI Desktop
-1. Open report in Power BI Desktop
-2. Click on page
-3. File → Export → Export as image
-4. Choose format and quality
-5. Save and upload to SharePoint
-
-ADVANTAGES:
-✅ No login required
-✅ Works perfectly on TVs
-✅ No authentication issues
-✅ Faster loading
-
-DISADVANTAGES:
-❌ Not live/real-time data
-❌ Must re-export when data updates
-❌ Static snapshot only
-
-RECOMMENDATION: Export weekly/monthly for TV displays`);
-        }
-
+        // ============================================================
+        // STORAGE MANAGER
+        // ============================================================
         class StorageManager {
-            static STORAGE_KEY = 'tv_kiosk_config';
+            static STORAGE_KEY = 'powerbi_kiosk_config';
 
             static save(config) {
                 try {
@@ -736,12 +651,16 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
             }
         }
 
+        // ============================================================
+        // SETTINGS UI MANAGER
+        // ============================================================
         class SettingsUI {
             constructor(kiosk) {
                 this.kiosk = kiosk;
                 this.settingsPanel = document.getElementById('settingsPanel');
                 this.settingsOverlay = document.getElementById('settingsOverlay');
                 this.slidesList = document.getElementById('slidesList');
+                
                 this.setupEventListeners();
             }
 
@@ -749,8 +668,8 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 document.getElementById('settingsButton').addEventListener('click', () => this.open());
                 document.getElementById('closeSettings').addEventListener('click', () => this.close());
                 this.settingsOverlay.addEventListener('click', () => this.close());
-                document.getElementById('addImageSlide').addEventListener('click', () => this.addSlide('image'));
-                document.getElementById('addPowerBISlide').addEventListener('click', () => this.addSlide('powerbi'));
+
+                document.getElementById('addReport').addEventListener('click', () => this.addReport());
                 document.getElementById('saveSettings').addEventListener('click', () => this.save());
                 document.getElementById('resetSettings').addEventListener('click', () => this.reset());
                 document.getElementById('copyExport').addEventListener('click', () => this.copyExport());
@@ -778,115 +697,106 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
 
             loadCurrentSettings() {
                 const config = this.kiosk.config;
-                document.getElementById('slideDuration').value = config.slideDuration / 1000;
-                document.getElementById('powerBiDuration').value = config.powerBiDuration / 1000;
+
+                document.getElementById('reportDuration').value = config.reportDuration / 1000;
                 document.getElementById('autoRefreshHours').value = config.autoRefreshHours;
-                document.getElementById('defaultImageFit').value = config.defaultImageFit || 'contain';
-                this.renderSlides(config.slides);
+
+                this.renderReports(config.reports);
                 this.updateExportConfig();
             }
 
-            renderSlides(slides) {
+            renderReports(reports) {
                 this.slidesList.innerHTML = '';
-                slides.forEach((slide, index) => {
-                    const slideItem = this.createSlideItem(slide, index);
-                    this.slidesList.appendChild(slideItem);
+                
+                if (reports.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'info-box';
+                    emptyState.innerHTML = '<strong>No reports configured</strong><br>Click "+ Add Power BI Report" to get started.';
+                    this.slidesList.appendChild(emptyState);
+                    return;
+                }
+                
+                reports.forEach((report, index) => {
+                    const reportItem = this.createReportItem(report, index);
+                    this.slidesList.appendChild(reportItem);
                 });
             }
 
-            createSlideItem(slide, index) {
+            createReportItem(report, index) {
                 const div = document.createElement('div');
                 div.className = 'slide-item';
                 div.dataset.index = index;
 
-                const type = slide.type === 'powerbi' ? 'Power BI' : 'Image';
-                const urlLabel = slide.type === 'powerbi' ? 'Power BI URL' : 'Image URL';
-                
-                const imageFitSection = slide.type === 'image' ? `
-                    <div class="form-group">
-                        <label>Image Fit</label>
-                        <select class="slide-image-fit">
-                            <option value="cover" ${slide.imageFit === 'cover' ? 'selected' : ''}>Cover (fill screen)</option>
-                            <option value="contain" ${slide.imageFit === 'contain' || !slide.imageFit ? 'selected' : ''}>Contain (show full image)</option>
-                            <option value="fill" ${slide.imageFit === 'fill' ? 'selected' : ''}>Fill (stretch)</option>
-                            <option value="actual" ${slide.imageFit === 'actual' ? 'selected' : ''}>Actual Size</option>
-                        </select>
-                    </div>
-                ` : '';
-
                 div.innerHTML = `
                     <div class="slide-item-header">
-                        <h4>Slide ${index + 1}: ${type}</h4>
+                        <h4>Report ${index + 1}: ${report.name || 'Unnamed Report'}</h4>
                         <button class="remove-slide" data-index="${index}">Remove</button>
                     </div>
                     <div class="form-group">
-                        <label>${urlLabel}</label>
-                        <input type="text" class="slide-url" value="${slide.url || slide.embedUrl || ''}" 
-                               placeholder="${slide.type === 'powerbi' ? 'https://app.powerbi.com/view?r=... or reportEmbed?' : 'https://tenant.sharepoint.com/.../image.jpg'}">
-                        <small>${slide.type === 'powerbi' ? 'Use Publish to Web URL or export report as image' : 'Full SharePoint URL'}</small>
+                        <label>Report Name</label>
+                        <input type="text" class="report-name" value="${report.name || ''}" 
+                               placeholder="e.g., Sales Dashboard">
+                        <small>Display name for this report</small>
                     </div>
-                    ${imageFitSection}
+                    <div class="form-group">
+                        <label>Power BI Embed URL</label>
+                        <input type="text" class="report-url" value="${report.embedUrl || ''}" 
+                               placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                        <small>Secure embed URL or public view URL</small>
+                    </div>
                     <div class="form-group">
                         <label>Duration (seconds)</label>
-                        <input type="number" class="slide-duration" value="${slide.duration / 1000}" min="5" max="600">
+                        <input type="number" class="report-duration" value="${report.duration / 1000}" 
+                               min="10" max="600">
+                        <small>How long to display this report</small>
                     </div>
                 `;
 
-                div.querySelector('.remove-slide').addEventListener('click', () => this.removeSlide(index));
+                div.querySelector('.remove-slide').addEventListener('click', () => this.removeReport(index));
+
                 return div;
             }
 
-            addSlide(type) {
+            addReport() {
                 const config = this.getCurrentConfig();
-                const newSlide = {
-                    type: type,
-                    url: type === 'image' ? '' : undefined,
-                    embedUrl: type === 'powerbi' ? '' : undefined,
-                    duration: type === 'powerbi' ? 30000 : 15000,
-                    imageFit: type === 'image' ? (config.defaultImageFit || 'contain') : undefined
+                const newReport = {
+                    name: '',
+                    embedUrl: '',
+                    duration: config.reportDuration
                 };
-                config.slides.push(newSlide);
-                this.renderSlides(config.slides);
+
+                config.reports.push(newReport);
+                this.renderReports(config.reports);
+                
+                // Scroll to bottom
                 this.slidesList.scrollTop = this.slidesList.scrollHeight;
             }
 
-            removeSlide(index) {
+            removeReport(index) {
                 const config = this.getCurrentConfig();
-                config.slides.splice(index, 1);
-                this.renderSlides(config.slides);
+                config.reports.splice(index, 1);
+                this.renderReports(config.reports);
             }
 
             getCurrentConfig() {
                 const config = {
-                    slideDuration: parseInt(document.getElementById('slideDuration').value) * 1000,
-                    powerBiDuration: parseInt(document.getElementById('powerBiDuration').value) * 1000,
+                    reportDuration: parseInt(document.getElementById('reportDuration').value) * 1000,
                     autoRefreshHours: parseInt(document.getElementById('autoRefreshHours').value),
-                    defaultImageFit: document.getElementById('defaultImageFit').value,
-                    slides: []
+                    reports: []
                 };
 
-                const slideItems = this.slidesList.querySelectorAll('.slide-item');
-                slideItems.forEach(item => {
-                    const index = parseInt(item.dataset.index);
-                    const originalSlide = this.kiosk.config.slides[index];
-                    const url = item.querySelector('.slide-url').value.trim();
-                    const duration = parseInt(item.querySelector('.slide-duration').value) * 1000;
+                const reportItems = this.slidesList.querySelectorAll('.slide-item');
+                reportItems.forEach(item => {
+                    const name = item.querySelector('.report-name')?.value.trim() || '';
+                    const url = item.querySelector('.report-url')?.value.trim() || '';
+                    const duration = parseInt(item.querySelector('.report-duration')?.value || 30) * 1000;
 
                     if (url) {
-                        const slide = {
-                            type: originalSlide.type,
+                        config.reports.push({
+                            name: name,
+                            embedUrl: url,
                             duration: duration
-                        };
-
-                        if (originalSlide.type === 'powerbi') {
-                            slide.embedUrl = url;
-                        } else {
-                            slide.url = url;
-                            const imageFitSelect = item.querySelector('.slide-image-fit');
-                            slide.imageFit = imageFitSelect ? imageFitSelect.value : 'contain';
-                        }
-
-                        config.slides.push(slide);
+                        });
                     }
                 });
 
@@ -895,10 +805,12 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
 
             save() {
                 const config = this.getCurrentConfig();
-                if (config.slides.length === 0) {
-                    alert('Please add at least one slide!');
+
+                if (config.reports.length === 0) {
+                    alert('Please add at least one Power BI report!');
                     return;
                 }
+
                 if (StorageManager.save(config)) {
                     this.kiosk.updateConfig(config);
                     this.showSuccess('Settings saved successfully!');
@@ -909,7 +821,7 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
             }
 
             reset() {
-                if (confirm('Reset to default configuration? This will remove all your slides and settings.')) {
+                if (confirm('Reset to default configuration? This will remove all your reports.')) {
                     StorageManager.clear();
                     this.kiosk.updateConfig(DEFAULT_CONFIG);
                     this.loadCurrentSettings();
@@ -926,6 +838,7 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 this.updateExportConfig();
                 const textarea = document.getElementById('exportConfig');
                 textarea.select();
+                
                 try {
                     document.execCommand('copy');
                     this.showSuccess('Configuration copied to clipboard!');
@@ -940,15 +853,19 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
 
             loadImport() {
                 const importText = document.getElementById('importConfig').value.trim();
+                
                 if (!importText) {
                     alert('Please paste a configuration first!');
                     return;
                 }
+
                 try {
                     const config = JSON.parse(importText);
-                    if (!config.slides || !Array.isArray(config.slides)) {
+                    
+                    if (!config.reports || !Array.isArray(config.reports)) {
                         throw new Error('Invalid configuration format');
                     }
+
                     if (StorageManager.save(config)) {
                         this.kiosk.updateConfig(config);
                         this.loadCurrentSettings();
@@ -964,11 +881,17 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 const successMsg = document.getElementById('successMessage');
                 successMsg.textContent = message;
                 successMsg.classList.add('show');
-                setTimeout(() => successMsg.classList.remove('show'), 3000);
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
             }
         }
 
-        class TVKiosk {
+        // ============================================================
+        // KIOSK APPLICATION
+        // ============================================================
+        class PowerBIKiosk {
             constructor(config) {
                 this.config = config;
                 this.currentSlideIndex = 0;
@@ -976,14 +899,17 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 this.slideTimeout = null;
                 this.isTransitioning = false;
                 this.isPaused = false;
+                
                 this.container = document.getElementById('kioskContainer');
                 this.progressBar = document.getElementById('progressBar');
                 this.slideCounter = document.getElementById('slideCounter');
+                this.welcomeScreen = document.getElementById('welcomeScreen');
+                
                 this.init();
             }
 
             init() {
-                console.log('Initializing TV Kiosk...');
+                console.log('Initializing Power BI Kiosk...');
                 this.createSlides();
                 this.setupClock();
                 this.startCarousel();
@@ -996,40 +922,40 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 this.container.innerHTML = '';
                 this.slides = [];
                 
-                this.config.slides.forEach((slideConfig, index) => {
+                // Show/hide welcome screen
+                if (this.config.reports.length === 0) {
+                    this.welcomeScreen.classList.remove('hidden');
+                    return;
+                } else {
+                    this.welcomeScreen.classList.add('hidden');
+                }
+                
+                this.config.reports.forEach((report, index) => {
                     const slide = document.createElement('div');
                     slide.className = 'slide';
                     slide.dataset.index = index;
                     
-                    if (slideConfig.type === 'image') {
-                        slide.classList.add('image-slide');
-                        const imageFit = slideConfig.imageFit || this.config.defaultImageFit || 'contain';
-                        slide.classList.add(`fit-${imageFit}`);
-                        slide.style.backgroundImage = `url('${slideConfig.url}')`;
-                        
-                        const img = new Image();
-                        img.src = slideConfig.url;
-                        img.onerror = () => console.error(`Failed to load image: ${slideConfig.url}`);
-                        
-                    } else if (slideConfig.type === 'powerbi') {
-                        slide.classList.add('powerbi-slide');
-                        const iframe = document.createElement('iframe');
-                        iframe.src = slideConfig.embedUrl;
-                        iframe.allowFullscreen = true;
-                        iframe.setAttribute('frameborder', '0');
-                        iframe.setAttribute('allowtransparency', 'true');
-                        slide.appendChild(iframe);
-                    }
+                    const iframe = document.createElement('iframe');
+                    iframe.src = report.embedUrl;
+                    iframe.allowFullscreen = true;
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allowtransparency', 'true');
                     
+                    slide.appendChild(iframe);
                     this.container.appendChild(slide);
-                    this.slides.push({ element: slide, config: slideConfig });
+                    
+                    this.slides.push({
+                        element: slide,
+                        config: report
+                    });
                 });
                 
                 if (this.slides.length > 0) {
                     this.slides[0].element.classList.add('active');
                     this.updateCounter();
                 }
-                console.log(`Created ${this.slides.length} slides`);
+                
+                console.log(`Created ${this.slides.length} Power BI report slides`);
             }
 
             startCarousel() {
@@ -1039,13 +965,15 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
 
             showSlide(index) {
                 if (this.isTransitioning || this.isPaused) return;
+                
                 this.isTransitioning = true;
                 this.currentSlideIndex = index;
+                
                 this.slides.forEach(slide => slide.element.classList.remove('active'));
                 this.slides[index].element.classList.add('active');
                 this.updateCounter();
                 
-                const duration = this.slides[index].config.duration || this.config.slideDuration;
+                const duration = this.slides[index].config.duration || this.config.reportDuration;
                 this.animateProgressBar(duration);
                 
                 clearTimeout(this.slideTimeout);
@@ -1065,7 +993,9 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
             }
 
             updateCounter() {
-                this.slideCounter.textContent = `${this.currentSlideIndex + 1} / ${this.slides.length}`;
+                const current = this.currentSlideIndex + 1;
+                const total = this.slides.length;
+                this.slideCounter.textContent = `${current} / ${total}`;
             }
 
             setupClock() {
@@ -1074,22 +1004,29 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                     const hours = now.getHours().toString().padStart(2, '0');
                     const minutes = now.getMinutes().toString().padStart(2, '0');
                     document.getElementById('timeDisplay').textContent = `${hours}:${minutes}`;
+                    
                     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
                 };
+                
                 updateClock();
                 setInterval(updateClock, 1000);
             }
 
             setupAutoRefresh() {
                 const refreshInterval = this.config.autoRefreshHours * 60 * 60 * 1000;
-                setTimeout(() => location.reload(), refreshInterval);
+                setTimeout(() => {
+                    console.log('Auto-refreshing page...');
+                    location.reload();
+                }, refreshInterval);
+                
                 console.log(`Auto-refresh scheduled in ${this.config.autoRefreshHours} hours`);
             }
 
             setupKeyboardControls() {
                 document.addEventListener('keydown', (e) => {
                     if (document.getElementById('settingsPanel').classList.contains('open')) return;
+                    
                     switch(e.key) {
                         case 'ArrowRight':
                         case 'n':
@@ -1101,7 +1038,11 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                             break;
                         case ' ':
                         case 'k':
-                            this.isPaused ? this.resume() : this.pause();
+                            if (this.isPaused) {
+                                this.resume();
+                            } else {
+                                this.pause();
+                            }
                             break;
                     }
                 });
@@ -1110,6 +1051,7 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
             setupWakeLock() {
                 if ('wakeLock' in navigator) {
                     let wakeLock = null;
+                    
                     const requestWakeLock = async () => {
                         try {
                             wakeLock = await navigator.wakeLock.request('screen');
@@ -1118,9 +1060,13 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                             console.error('Wake lock error:', err);
                         }
                     };
+                    
                     requestWakeLock();
+                    
                     document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible') requestWakeLock();
+                        if (document.visibilityState === 'visible') {
+                            requestWakeLock();
+                        }
                     });
                 }
             }
@@ -1138,6 +1084,7 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
             pause() {
                 this.isPaused = true;
                 clearTimeout(this.slideTimeout);
+                this.progressBar.style.animationPlayState = 'paused';
                 console.log('Carousel paused');
             }
 
@@ -1152,27 +1099,35 @@ RECOMMENDATION: Export weekly/monthly for TV displays`);
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                this.showSlide((this.currentSlideIndex + 1) % this.slides.length);
+                const nextIndex = (this.currentSlideIndex + 1) % this.slides.length;
+                this.showSlide(nextIndex);
             }
 
             previous() {
                 clearTimeout(this.slideTimeout);
                 this.isTransitioning = false;
                 this.isPaused = false;
-                this.showSlide((this.currentSlideIndex - 1 + this.slides.length) % this.slides.length);
+                const prevIndex = (this.currentSlideIndex - 1 + this.slides.length) % this.slides.length;
+                this.showSlide(prevIndex);
             }
         }
 
+        // ============================================================
+        // INITIALIZE APPLICATION
+        // ============================================================
         let kiosk, settingsUI;
         
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded, starting kiosk...');
+            console.log('DOM loaded, starting Power BI kiosk...');
+            
             const savedConfig = StorageManager.load();
             const config = savedConfig || DEFAULT_CONFIG;
-            kiosk = new TVKiosk(config);
+            
+            kiosk = new PowerBIKiosk(config);
             settingsUI = new SettingsUI(kiosk);
+            
             window.kiosk = kiosk;
-            console.log('Kiosk initialized.');
+            console.log('Power BI Kiosk initialized. Use window.kiosk for debugging');
         });
     </script>
 </body>
