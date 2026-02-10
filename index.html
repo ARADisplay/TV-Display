@@ -467,12 +467,12 @@
         <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Configure Reports</button>
     </div>
 
-    <div class="kiosk-container" id="kioskContainer"><div class="slide"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc" allowfullscreen="" frameborder="0"></iframe></div><div class="slide active"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876" allowfullscreen="" frameborder="0"></iframe></div></div>
+    <div class="kiosk-container" id="kioskContainer"><div class="slide active"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc" allowfullscreen="" frameborder="0"></iframe></div><div class="slide"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876" allowfullscreen="" frameborder="0"></iframe></div></div>
     <div class="progress-bar" id="progressBar" style="transition: width 30000ms linear; width: 100%;"></div>
-    <div class="slide-counter" id="slideCounter">2 / 2</div>
+    <div class="slide-counter" id="slideCounter">1 / 2</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">10:22</div>
+        <div class="time" id="timeDisplay">10:29</div>
         <div class="date" id="dateDisplay">Tuesday, February 10, 2026</div>
     </div>
 
@@ -503,7 +503,7 @@
 
                 <div class="form-group">
                     <label>Token Refresh Interval (minutes)</label>
-                    <input type="number" id="tokenRefresh" min="5" max="30" value="10">
+                    <input type="number" id="tokenRefresh" min="5" max="120" value="20">
                     <small>Reload reports to refresh authentication - <strong>Set to 20 minutes for short token expiry</strong></small>
                 </div>
 
@@ -637,7 +637,7 @@
                               "duration": 30000
                     },
                     {
-                              "name": "FRASW TL",
+                              "name": "FRASWL TL",
                               "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&pageName=cb893c1013b40fa662fc",
                               "duration": 30000
                     }
@@ -685,7 +685,7 @@
 
             loadCurrentSettings() {
                 document.getElementById('reportDuration').value = this.kiosk.config.reportDuration / 1000;
-                document.getElementById('tokenRefresh').value = this.kiosk.config.tokenRefresh || 10;
+                document.getElementById('tokenRefresh').value = this.kiosk.config.tokenRefresh || 20;
                 this.renderReports(this.kiosk.config.reports);
             }
 
@@ -931,7 +931,7 @@
 
             setupTokenRefresh() {
                 // Refresh iframe tokens periodically to prevent authentication expiry
-                const refreshMinutes = this.config.tokenRefresh || 10;
+                const refreshMinutes = this.config.tokenRefresh || 45;
                 const refreshInterval = refreshMinutes * 60 * 1000;
                 
                 console.log(`Token refresh scheduled every ${refreshMinutes} minutes`);
