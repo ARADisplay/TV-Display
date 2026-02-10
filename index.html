@@ -461,18 +461,18 @@
 </head>
 <body>
     <!-- Welcome screen -->
-    <div class="welcome-screen hidden" id="welcomeScreen">
+    <div class="welcome-screen" id="welcomeScreen">
         <h1>📊 Power BI Dashboard Kiosk</h1>
         <p>Configure your Power BI reports and download the updated HTML file to share with others.</p>
         <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Configure Reports</button>
     </div>
 
-    <div class="kiosk-container" id="kioskContainer"><div class="slide active"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc" allowfullscreen="" frameborder="0"></iframe></div><div class="slide"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876" allowfullscreen="" frameborder="0"></iframe></div></div>
-    <div class="progress-bar" id="progressBar" style="transition: width 30000ms linear; width: 100%;"></div>
-    <div class="slide-counter" id="slideCounter">1 / 2</div>
+    <div class="kiosk-container" id="kioskContainer"></div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="slide-counter" id="slideCounter">1 / 1</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">10:29</div>
+        <div class="time" id="timeDisplay">11:47</div>
         <div class="date" id="dateDisplay">Tuesday, February 10, 2026</div>
     </div>
 
@@ -521,16 +521,31 @@
                     1. Open report in Power BI Service<br>
                     2. File → Embed report → Website or portal<br>
                     3. Copy the embed URL<br>
-                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&amp;groupId=YYY</code><br><br>
+                    Format: <code>https://app.powerbi.com/reportEmbed?reportId=XXX&amp;autoAuth=true&amp;ctid=YYY</code><br><br>
                     
-                    <strong>📄 To Show a Specific Page (NEW!):</strong><br>
+                    <strong>📄 To Show a Specific Page - USE THIS METHOD:</strong><br>
                     4. Navigate to the page you want in Power BI<br>
-                    5. Look at browser URL - find the page identifier (e.g., <code>ReportSection<strong>abc123</strong></code>)<br>
-                    6. Add to embed URL: <code>&amp;pageName=ReportSection<strong>abc123</strong></code><br>
-                    Example: <code>...reportEmbed?reportId=XXX&amp;groupId=YYY<strong>&amp;pageName=ReportSection2</strong></code>
+                    5. Look at browser URL - the page ID is the part after the report ID<br>
+                    6. Add to embed URL: <code>&amp;navContentPaneEnabled=false&amp;pageName=PAGEID</code><br><br>
+                    
+                    <strong>Example:</strong><br>
+                    Page URL: <code>.../reports/071dbcb7.../1fa103a17f1d62bc06cc?experience...</code><br>
+                    Page ID: <code>1fa103a17f1d62bc06cc</code><br>
+                    Full Embed: <code>...&amp;autoAuth=true&amp;ctid=YYY&amp;navContentPaneEnabled=false&amp;pageName=1fa103a17f1d62bc06cc</code>
                 </div>
 
                 <div class="warning-box">
+                    <strong>🔐 IMPORTANT - Authentication Fix:</strong><br>
+                    To prevent "sign in on each page" issue:<br>
+                    1. <strong>Sign in to Power BI Service FIRST</strong> in the same browser (open new tab → app.powerbi.com → sign in)<br>
+                    2. Check "Stay signed in"<br>
+                    3. <strong>Keep that tab open</strong> in the background<br>
+                    4. Then open the kiosk - all pages will use the same authentication!<br><br>
+                    
+                    <strong>💡 Alternative:</strong> Use <code>&amp;autoAuth=true</code> in all embed URLs (already included in your URLs)
+                </div>
+
+                <div class="info-box">
                     <strong>💡 Pro Tip:</strong> You can add the same report multiple times with different page names to show different pages as separate slides!<br>
                     Example: Sales Dashboard Page 1, Sales Dashboard Page 2, etc.
                 </div>
@@ -546,7 +561,7 @@
                         </div>
                         <div class="form-group">
                             <label>Power BI Embed URL</label>
-                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=1fa103a17f1d62bc06cc" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
                         </div>
                         <div class="form-group">
                             <label>Duration (seconds)</label>
@@ -563,7 +578,7 @@
                         </div>
                         <div class="form-group">
                             <label>Power BI Embed URL</label>
-                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=fec48482d6eb2e656876" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
                         </div>
                         <div class="form-group">
                             <label>Duration (seconds)</label>
@@ -616,7 +631,7 @@
         </div>
     </div>
 
-    <div class="success-message" id="successMessage">HTML file downloaded! Share this file - it includes all your reports.</div>
+    <div class="success-message" id="successMessage">Configuration updated!</div>
 
     <script>
         // ============================================================
@@ -624,21 +639,21 @@
         // ============================================================
         const EMBEDDED_CONFIG = {
           "reportDuration": 30000,
-          "tokenRefresh": 10,
+          "tokenRefresh": 20,
           "reports": [
                     {
                               "name": "Production",
-                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&pageName=1fa103a17f1d62bc06cc",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&navContentPaneEnabled=false&pageName=1fa103a17f1d62bc06cc",
                               "duration": 30000
                     },
                     {
                               "name": "DS",
-                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&pageName=fec48482d6eb2e656876",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&navContentPaneEnabled=false&pageName=fec48482d6eb2e656876",
                               "duration": 30000
                     },
                     {
-                              "name": "FRASWL TL",
-                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&pageName=cb893c1013b40fa662fc",
+                              "name": "FRASW TL",
+                              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&autoAuth=true&ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&navContentPaneEnabled=false&pageName=cb893c1013b40fa662fc",
                               "duration": 30000
                     }
           ]
@@ -858,24 +873,46 @@
                     this.welcomeScreen.classList.add('hidden');
                 }
                 
-                this.config.reports.forEach((report) => {
+                this.config.reports.forEach((report, index) => {
                     const slide = document.createElement('div');
                     slide.className = 'slide';
+                    slide.dataset.index = index;
                     
                     const iframe = document.createElement('iframe');
-                    iframe.src = report.embedUrl;
+                    
+                    // Add timestamp to prevent caching issues and force reload
+                    const url = new URL(report.embedUrl);
+                    // Add filter parameter for better page targeting (alternative to pageName)
+                    if (report.embedUrl.includes('pageName=')) {
+                        // If pageName exists, also add as filter for compatibility
+                        const pageName = report.embedUrl.split('pageName=')[1].split('&')[0];
+                        url.searchParams.set('filter', `$filter=ReportSection eq '${pageName}'`);
+                    }
+                    // Add unique identifier to prevent iframe caching
+                    url.searchParams.set('ts', Date.now() + index);
+                    
+                    iframe.src = url.toString();
                     iframe.allowFullscreen = true;
                     iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allowtransparency', 'true');
+                    // Important: Allow same-origin to share authentication
+                    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
                     
                     slide.appendChild(iframe);
                     this.container.appendChild(slide);
-                    this.slides.push({ element: slide, config: report });
+                    
+                    this.slides.push({
+                        element: slide,
+                        config: report
+                    });
                 });
                 
                 if (this.slides.length > 0) {
                     this.slides[0].element.classList.add('active');
                     this.updateCounter();
                 }
+                
+                console.log(`Created ${this.slides.length} Power BI report slides`);
             }
 
             startCarousel() {
