@@ -461,22 +461,22 @@
 </head>
 <body>
     <!-- Welcome screen -->
-    <div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-screen hidden" id="welcomeScreen">
         <h1>📊 Power BI Dashboard Kiosk</h1>
         <p>Configure your Power BI reports and download the updated HTML file to share with others.</p>
         <button class="btn" onclick="document.getElementById('settingsButton').click()">⚙ Configure Reports</button>
     </div>
 
-    <div class="kiosk-container" id="kioskContainer"></div>
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="slide-counter" id="slideCounter">1 / 1</div>
+    <div class="kiosk-container" id="kioskContainer"><div class="slide active" data-index="0"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=1fa103a17f1d62bc06cc&amp;filter=%24filter%3DReportSection+eq+%271fa103a17f1d62bc06cc%27&amp;ts=1770869880673" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="1"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=fec48482d6eb2e656876&amp;filter=%24filter%3DReportSection+eq+%27fec48482d6eb2e656876%27&amp;ts=1770869880676" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="2"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=cb893c1013b40fa662fc&amp;filter=%24filter%3DReportSection+eq+%27cb893c1013b40fa662fc%27&amp;ts=1770869880679" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div></div>
+    <div class="progress-bar" id="progressBar" style="transition: width 30000ms linear; width: 100%;"></div>
+    <div class="slide-counter" id="slideCounter">1 / 3</div>
     
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">11:47</div>
-        <div class="date" id="dateDisplay">Tuesday, February 10, 2026</div>
+        <div class="time" id="timeDisplay">15:42</div>
+        <div class="date" id="dateDisplay">Thursday, February 12, 2026</div>
     </div>
 
-    <button class="fullscreen-button" id="fullscreenButton" title="Toggle Fullscreen">⛶</button>
+    <button class="fullscreen-button" id="fullscreenButton" title="Enter Fullscreen (F or F11)">⛶</button>
     <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
     <div class="settings-overlay active" id="settingsOverlay"></div>
 
@@ -586,16 +586,16 @@
                         </div>
                     </div><div class="slide-item" data-index="2">
                         <div class="slide-item-header">
-                            <h4>Report 3: Unnamed</h4>
+                            <h4>Report 3: FRASW TL</h4>
                             <button class="remove-slide" data-index="2">Remove</button>
                         </div>
                         <div class="form-group">
                             <label>Report Name</label>
-                            <input type="text" class="report-name" value="" placeholder="e.g., Sales Dashboard">
+                            <input type="text" class="report-name" value="FRASW TL" placeholder="e.g., Sales Dashboard">
                         </div>
                         <div class="form-group">
                             <label>Power BI Embed URL</label>
-                            <input type="text" class="report-url" value="" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
+                            <input type="text" class="report-url" value="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;navContentPaneEnabled=false&amp;pageName=cb893c1013b40fa662fc" placeholder="https://app.powerbi.com/reportEmbed?reportId=...">
                         </div>
                         <div class="form-group">
                             <label>Duration (seconds)</label>
@@ -639,7 +639,7 @@
         // ============================================================
         const EMBEDDED_CONFIG = {
           "reportDuration": 30000,
-          "tokenRefresh": 20,
+          "tokenRefresh": 5,
           "reports": [
                     {
                               "name": "Production",
@@ -1099,6 +1099,7 @@
             });
         });
     </script>
+
 
 
 </body></html>
