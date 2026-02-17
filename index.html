@@ -157,6 +157,54 @@
             background: rgba(0, 120, 212, 0.8);
         }
 
+        /* Fullscreen countdown indicator */
+        .fullscreen-countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0, 120, 212, 0.95), rgba(80, 230, 255, 0.95));
+            color: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            font-size: 20px;
+            z-index: 2500;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+        }
+
+        .fullscreen-countdown.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fullscreen-countdown:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .fullscreen-countdown-number {
+            font-size: 64px;
+            font-weight: 700;
+            color: #fff;
+            display: block;
+            margin: 15px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .fullscreen-countdown-hint {
+            display: block;
+            font-size: 14px;
+            margin-top: 15px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
         /* Control buttons */
         .settings-button,
         .fullscreen-button {
@@ -789,20 +837,28 @@
     </div>
 
     <!-- Main Container -->
-    <div class="kiosk-container" id="kioskContainer"><div class="slide active" data-index="0"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771154233569" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="1"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771154233572" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="2"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=cb893c1013b40fa662fc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771154233574" allowfullscreen="" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div></div>
+    <div class="kiosk-container" id="kioskContainer"><div class="slide active" data-index="0"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771297521131" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="1"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771297521134" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div><div class="slide" data-index="2"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=cb893c1013b40fa662fc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771297521136" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div></div>
 
     <!-- Hidden container for pre-loading fresh iframes -->
-    <div class="refresh-container" id="refreshContainer"></div>
+    <div class="refresh-container" id="refreshContainer"><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=1fa103a17f1d62bc06cc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771300221145" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=fec48482d6eb2e656876&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771300221148" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe><iframe src="https://app.powerbi.com/reportEmbed?reportId=071dbcb7-297e-4952-adf3-fe4be560a402&amp;autoAuth=true&amp;ctid=86c91b9a-5846-4348-9146-d5ff03b8ec52&amp;pageName=cb893c1013b40fa662fc&amp;navContentPaneEnabled=false&amp;filterPaneEnabled=false&amp;ts=1771300221150" frameborder="0" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div>
 
     <!-- UI Elements -->
     <div class="datetime-display">
-        <div class="time" id="timeDisplay">15:17</div>
-        <div class="date" id="dateDisplay">Sunday, February 15, 2026</div>
+        <div class="time" id="timeDisplay">07:50</div>
+        <div class="date" id="dateDisplay">Tuesday, February 17, 2026</div>
     </div>
 
     <div class="slide-counter" id="slideCounter">1 / 3</div>
     <div class="progress-bar" id="progressBar" style="transition: width 30000ms linear; width: 100%;"></div>
-    <div class="status-indicator" id="statusIndicator">Status</div>
+    <div class="status-indicator success" id="statusIndicator">Fresh reports ready</div>
+    
+    <!-- Fullscreen countdown -->
+    <div class="fullscreen-countdown" id="fullscreenCountdown">
+                                <div>Ready to enter fullscreen!</div>
+                                <span class="fullscreen-countdown-number">👆</span>
+                                <div>Click anywhere to continue</div>
+                                <div class="fullscreen-countdown-hint">Browser requires user interaction for fullscreen</div>
+                            </div>
 
     <!-- Control Buttons -->
     <button class="fullscreen-button" id="fullscreenButton" title="Enter Fullscreen (F or F11)">⛶</button>
@@ -1415,6 +1471,7 @@
                     const loadState = {
                         iframe: iframe,
                         loaded: false,
+                        error: false,
                         index: index
                     };
                     
@@ -1425,6 +1482,22 @@
                         this.checkAllPreloaded();
                     });
                     
+                    // Monitor for errors
+                    iframe.addEventListener('error', () => {
+                        loadState.error = true;
+                        console.error(`Pre-load iframe ${index + 1} failed to load`);
+                        this.checkAllPreloaded();
+                    });
+                    
+                    // Timeout after 30 seconds
+                    setTimeout(() => {
+                        if (!loadState.loaded && !loadState.error) {
+                            console.warn(`Pre-load iframe ${index + 1} timed out`);
+                            loadState.error = true;
+                            this.checkAllPreloaded();
+                        }
+                    }, 30000);
+                    
                     // Add to hidden container
                     this.refreshContainer.appendChild(iframe);
                     this.refreshIframes.push(loadState);
@@ -1432,10 +1505,26 @@
             }
 
             checkAllPreloaded() {
-                const allLoaded = this.refreshIframes.every(state => state.loaded);
-                if (allLoaded) {
-                    console.log('All refresh iframes pre-loaded and ready for swap');
-                    this.showStatus('Fresh reports ready', 'success');
+                const allDone = this.refreshIframes.every(state => state.loaded || state.error);
+                const anyLoaded = this.refreshIframes.some(state => state.loaded);
+                const allFailed = this.refreshIframes.every(state => state.error);
+                
+                if (allDone) {
+                    if (allFailed) {
+                        console.error('All refresh iframes failed to load - tokens may be expired');
+                        this.showStatus('Token refresh failed - reload page', 'warning');
+                        this.isRefreshing = false;
+                        
+                        // Offer to reload the page
+                        setTimeout(() => {
+                            if (confirm('Token refresh failed. This usually means your Power BI session has expired.\n\nClick OK to reload the page and re-authenticate.')) {
+                                location.reload();
+                            }
+                        }, 2000);
+                    } else if (anyLoaded) {
+                        console.log('Some refresh iframes ready for swap (some may have failed)');
+                        this.showStatus('Fresh reports ready', 'success');
+                    }
                 }
             }
 
@@ -1443,12 +1532,15 @@
                 console.log('Starting seamless iframe swap...');
                 this.showStatus('Refreshing tokens...', 'warning');
                 
+                let successCount = 0;
+                let failCount = 0;
+                
                 // Swap each visible iframe with its pre-loaded counterpart
                 this.slides.forEach((slide, index) => {
                     const oldIframe = slide.iframe;
                     const refreshState = this.refreshIframes[index];
                     
-                    if (refreshState && refreshState.loaded) {
+                    if (refreshState && refreshState.loaded && !refreshState.error) {
                         const newIframe = refreshState.iframe;
                         
                         // Clone the new iframe to reset it
@@ -1460,9 +1552,11 @@
                         slide.iframe = freshIframe;
                         slide.lastRefresh = Date.now();
                         
-                        console.log(`Swapped iframe ${index + 1}: ${slide.config.name}`);
+                        console.log(`✓ Swapped iframe ${index + 1}: ${slide.config.name}`);
+                        successCount++;
                     } else {
-                        console.warn(`Refresh iframe ${index + 1} not ready, skipping swap`);
+                        console.warn(`✗ Refresh iframe ${index + 1} not ready or failed, keeping old iframe`);
+                        failCount++;
                     }
                 });
                 
@@ -1471,8 +1565,16 @@
                 this.refreshIframes = [];
                 this.isRefreshing = false;
                 
-                this.showStatus('Tokens refreshed successfully', 'success');
-                console.log('Token refresh complete - all iframes updated');
+                if (successCount > 0 && failCount === 0) {
+                    this.showStatus('Tokens refreshed successfully', 'success');
+                    console.log(`Token refresh complete - ${successCount} iframes updated`);
+                } else if (successCount > 0) {
+                    this.showStatus(`Partial refresh: ${successCount} OK, ${failCount} failed`, 'warning');
+                    console.warn(`Token refresh partial - ${successCount} succeeded, ${failCount} failed`);
+                } else {
+                    this.showStatus('Token refresh failed - keeping old frames', 'warning');
+                    console.error('Token refresh failed completely - all iframes failed to load');
+                }
             }
 
             showStatus(message, type = 'success') {
@@ -1906,6 +2008,68 @@
                     fullscreenButton.textContent = '⛶';
                 }
             });
+
+            // Auto-fullscreen after 1 minute (60000ms) if not already in fullscreen
+            // Note: Browsers require user interaction before fullscreen, so we set a flag
+            // and enter fullscreen on the next user interaction (click/key) after 1 minute
+            let autoFullscreenReady = false;
+            let countdownInterval = null;
+            
+            setTimeout(() => {
+                if (!document.fullscreenElement) {
+                    console.log('Auto-fullscreen ready - will activate on next user interaction');
+                    autoFullscreenReady = true;
+                    
+                    // First dismiss welcome screen if still showing
+                    if (!kiosk.welcomeScreen.classList.contains('hidden')) {
+                        kiosk.dismissWelcome();
+                    }
+                    
+                    // Show countdown
+                    const countdownEl = document.getElementById('fullscreenCountdown');
+                    const countdownNumber = document.getElementById('countdownNumber');
+                    let secondsLeft = 10;
+                    
+                    countdownNumber.textContent = secondsLeft;
+                    countdownEl.classList.add('show');
+                    
+                    countdownInterval = setInterval(() => {
+                        secondsLeft--;
+                        countdownNumber.textContent = secondsLeft;
+                        
+                        if (secondsLeft <= 0) {
+                            clearInterval(countdownInterval);
+                            // Change message to prompt user to click
+                            countdownEl.innerHTML = `
+                                <div>Ready to enter fullscreen!</div>
+                                <span class="fullscreen-countdown-number">👆</span>
+                                <div>Click anywhere to continue</div>
+                                <div class="fullscreen-countdown-hint">Browser requires user interaction for fullscreen</div>
+                            `;
+                        }
+                    }, 1000);
+                }
+            }, 50000); // 50 seconds, then 10 second countdown
+            
+            // Listen for any user interaction after countdown
+            const triggerAutoFullscreen = (e) => {
+                if (autoFullscreenReady && !document.fullscreenElement) {
+                    console.log('User interaction detected - entering fullscreen');
+                    const countdownEl = document.getElementById('fullscreenCountdown');
+                    countdownEl.classList.remove('show');
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    
+                    kiosk.toggleFullscreen();
+                    autoFullscreenReady = false;
+                    
+                    // Remove listeners after fullscreen
+                    document.removeEventListener('click', triggerAutoFullscreen);
+                    document.removeEventListener('keydown', triggerAutoFullscreen);
+                }
+            };
+            
+            document.addEventListener('click', triggerAutoFullscreen);
+            document.addEventListener('keydown', triggerAutoFullscreen);
         });
     </script>
 
